@@ -1,0 +1,28 @@
+<HTML>
+<HEAD>
+	<TITLE>Make a new User</TITLE>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="firebase.js"></script>
+</HEAD>
+<BODY>
+<H1>Add a new Object</H1>
+
+<FORM method="post" action="../insert">
+	Object:<input type="text" name="object" id="object">
+	Type:<input type="text" name="type"id="type"> 
+	<input type="submit">
+</form>
+<br>
+<H1>Get an object</H1>
+<FORM method="post" action="../query">
+	Id:<input type="text" name="Id1" id="Id1">
+	<input type="submit">
+</form>
+<H1>Search an object by Key-Value</H1>
+<FORM method="post" action="../search">
+	Key:<input type="text" name="key1" id="key1">
+	Value:<input type="text" name="value1" id="value1">
+	<input type="submit">
+</form>
+</BODY>
+</HTML
