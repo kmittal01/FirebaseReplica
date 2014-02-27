@@ -5,6 +5,7 @@ import tornado.ioloop
 import tornado.options
 import tornado.web
 import torndb
+import time
 from tornado.options import define,options
 define("port",default=8000,help="tornado will run on the given port",type=int)
 
@@ -16,7 +17,7 @@ class DbInsert(tornado.web.RequestHandler):
 	def post(self):
 		object1=self.get_argument('object')
 		type1=self.get_argument('type')
-		db.execute("Insert into Obj_Table (`J_Obj`,`Type`) Values (%s,%s)",object1,type1 )
+		db.execute("Insert into Obj_Table (`J_Obj`,`Type`,`Timestamp`) Values (%s,%s,%s)",object1,type1,time.time() )
 		json_data=json.loads(object1)
 		row=db.query("select * from Obj_Table Order by id desc")
 		new_id=row[0].Id
@@ -28,14 +29,29 @@ class DbInsert(tornado.web.RequestHandler):
 class DbQuery(tornado.web.RequestHandler):
 	def post(self):
 		id1=self.get_argument('Id1')
-		for row in db.query("Select * from Obj_Table where Id = "+id1):
-			self.write ("{\"Id\":"+str(row.Id) +",\"Obj\":"+ str(row.J_Obj)+",\"Type\":\""+str(row.Type)+"\",\"Timestamp\":\""+str(row.Timestamp)+"\"}")
+		id1='('+id1+')'
+		for row in db.query("Select * from Obj_Table where Id In "+id1):
+			self.write ("{\"Id\":"+str(row.Id) +",\"Obj\":"+ str(row.J_Obj)+",\"Type\":\""+str(row.Type)+"\",\"Timestamp\":\""+str(row.Timestamp)+"\"}<br>")
 class DbSearch(tornado.web.RequestHandler):
 	def post(self):
 		key1=self.get_argument('key1')
 		value1=self.get_argument('value1')
-		for row in db.query("Select * from KeyValueTable where `Key` ='" +str(key1)+"' and `Value`='"+str(value1)+"'"):
+		parameter1=self.get_argument('parameter1')
+		gle1=self.get_argument('gle1')
+		pValue1=self.get_argument('parameterValue1')
+		limit1=self.get_argument('limit1','1000')
+		a=list()
+		for row in db.query("Select * from KeyValueTable where `Key` ='" +str(key1)+"' and `Value`='"+str(value1)+"' Limit "+limit1):
 			self.write (str(row.Id)+"<br>")
+			a.append(str(row.Id))
+		a=tuple(a)
+		self.write(str(a))
+		self.write(parameter1)
+		self.write(pValue1)
+		self.write(gle1)
+		self.write("<br> Select * from Obj_Table where Id IN "+str(a)+" and `"+str(parameter1)+"`" +gle1+" \""+str(pValue1)+"\"<br>")
+		for row in db.query("Select * from Obj_Table where Id IN "+str(a)+" and `"+str(parameter1)+"`" +gle1+ "\""+str(pValue1)+"\"" ):
+			self.write ("{\"Id\":"+str(row.Id) +",\"Obj\":"+ str(row.J_Obj)+",\"Type\":\""+str(row.Type)+"\",\"Timestamp\":\""+str(row.Timestamp)+"\"}"+"<br>")
 if __name__ == "__main__":
 	tornado.options.parse_command_line()
 	db = torndb.Connection("localhost", "tordata",user="root",password="ksh")
