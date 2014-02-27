@@ -22,11 +22,18 @@
 <FORM method="post" action="../search">
 	Key:<input type="text" name="key1" id="key1">
 	Value:<input type="text" name="value1" id="value1">
+	<br>
 	Parameter:<input type="text" name="parameter1" id="parameter1">
-	G/L/E:<input type="text" name="gle1" id="gle1">
+	G/L/E:<input type="text" name="gle1" id="gle1" placeholder="= | < | > | <= | >=">
 	Value of Paramter:<input type="text" name="parameterValue1" id="parameterValue1">
+	<br>
 	Limit:<input type="text" name="limit1" id="limit1">
 	<input type="submit">
+</form>
+<H1> Remove Object</H1>
+<form method="post" action="../remove">
+Remove Object:<input type="text" name="removeId1" id="removeId1" placeholder="Id of the object to be removed"  >
+<input type="submit">
 </form>
 </BODY>
 </HTML
