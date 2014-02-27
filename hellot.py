@@ -61,9 +61,14 @@ class DbSearch(tornado.web.RequestHandler):
 		#self.write(parameter1)
 		#self.write(pValue1)
 		#self.write(gle1)
-		self.write("<br> Select * from Obj_Table where Id IN "+str(a)+" and `"+str(parameter1)+"`" +gle1+" \""+str(pValue1)+"\"<br>")
+		a=str(a)
+		if bool(a.strip(',)')):
+			a=a.strip(',)')
+			a=a+')'
+
+		self.write("<br> Select * from Obj_Table where Id IN "+a+" and `"+str(parameter1)+"`" +gle1+" \""+str(pValue1)+"\"<br>")
 		for row in db.query("Select * from Obj_Table where Id IN "+str(a)+" and `"+str(parameter1)+"`" +gle1+ "\""+str(pValue1)+"\"" ):
-			self.write ("{\"Id\":"+str(row.Id) +",\"Obj\":"+ str(row.J_Obj)+",\"Type\":\""+str(row.Type)+"\",\"Timestamp\":\""+str(row.Timestamp)+"\"}"+"<br>")
+				self.write ("{\"Id\":"+str(row.Id) +",\"Obj\":"+ str(row.J_Obj)+",\"Type\":\""+str(row.Type)+"\",\"Timestamp\":\""+str(row.Timestamp)+"\"}"+"<br>")
 class DbRemove (tornado.web.RequestHandler):
 	def post(self):
 		removeId1=self.get_argument('removeId1')
