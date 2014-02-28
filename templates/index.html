@@ -8,8 +8,6 @@
   <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 </script>
-  <script src="firebase.js" type="text/javascript">
-</script>
 <script>
 function subscribe() {
   var serializedData = $("#subs").serialize();
@@ -26,17 +24,98 @@ function subscribe() {
       }   
     });
 }
+
+function insert() {
+  var serializedData2 = $("#ins").serialize();
+  $.ajax({
+    type: 'post',
+    url: 'http://localhost:8000/insert',
+    data: serializedData2,
+    async:true,
+    success: function(data) {
+      $('#insertReturn').html(data);
+      alert(data);
+    },
+    error: function(XMLHttpRequest, textstatus, error) { 
+        console.log(error);         
+      }
+  });
+}
+
+function search() {
+  var serializedData2 = $("#search").serialize();
+    $.ajax({
+        type: 'post',
+        url: 'http://localhost:8000/search',
+        data: serializedData2,
+        async:true,
+        success: function(data) {
+          $('#searchReturn').html(data);
+          alert(data);
+        },
+      error: function(XMLHttpRequest, textstatus, error) { 
+          console.log(error);         
+      }
+    });
+}
+function removeObj() {
+  var serializedData2 = $("#remove").serialize();
+    $.ajax({
+        type: 'post',
+        url: 'http://localhost:8000/remove',
+        data: serializedData2,
+        async:true,
+        success: function(data) {
+          $('#removeReturn').html(data);
+        },
+        error: function(XMLHttpRequest, textstatus, error) { 
+          console.log(error);         
+        }
+     });
+}
+
+function indexKey() {
+  var serializedData2 = $("#indexKey").serialize();
+    $.ajax({
+        type: 'post',
+        url: 'http://localhost:8000/indexKey',
+        data: serializedData2,
+        async:true,
+        success: function(data) {
+          $('#indexReturn').html(data);
+        },
+        error: function(XMLHttpRequest, textstatus, error) { 
+          console.log(error);         
+        }
+     });
+}
+function publish() {
+  var serializedData2 = $("#publish").serialize();
+    $.ajax({
+        type: 'post',
+        url: 'http://localhost:8000/publish',
+        data: serializedData2,
+        async:true,
+        success: function(data) {
+          $('#publishReturn').html(data);
+        },
+        error: function(XMLHttpRequest, textstatus, error) { 
+          console.log(error);         
+        }
+     });
+}
 </script>
 </head>
 
 <body>
   <h1>Add a new Object</h1>
 
-  <form method="post" action="http://localhost:8000/insert">
-    Object:<input type="text" name="object" id="object" /> Type:<input type="text" name=
-    "type" id="type" /> <input type="submit" />
+  <form id="ins">
+    Object:<input type="text" name="object" id="object" /> 
+    Type:<input type="text" name="type" id="type" /> 
+    <input type="button" value="insert" onclick="insert()" />
   </form><br />
-
+<div id="insertReturn"> </div>
   <h1>Get an object</h1>
 
   <form method="post" action="http://localhost:8000/query">
@@ -45,38 +124,42 @@ function subscribe() {
 
   <h1>Search an object by Key-Value</h1>
 
-  <form method="post" action="http://localhost:8000/search">
+  <form id="search">
     Key:<input type="text" name="key1" id="key1" /> 
     G/L/E:<input type="text" name="gle2" id="gle2" placeholder="= | &lt; | &gt; | &lt;= | &gt;=" /> 
     Value:<input type="text" name="value1" id="value1" /><br />
     Parameter:<input type="text" name="parameter1" id="parameter1" /> 
     G/L/E:<input type="text" name="gle1" id="gle1" placeholder="= | &lt; | &gt; | &lt;= | &gt;=" /> 
     Value of Paramter:<input type="text" name="parameterValue1" id="parameterValue1" /><br />
-    Limit:<input type="text" name="limit1" id="limit1" /> <input type="submit" />
+    Limit:<input type="text" name="limit1" id="limit1" /> 
+    <input type="button" value="Search" onclick="search()" />
   </form>
-
+<div id="searchReturn"> </div>
+  
   <h1>Remove Object</h1>
 
-  <form method="post" action="http://localhost:8000/remove">
+  <form id="remove">
     Remove Object:<input type="text" name="removeId1" id="removeId1" placeholder=
-    "Id of the object to be removed" /> <input type="submit" />
+    "Id of the object to be removed" /> 
+   <input type="button" value="Remove" onclick="removeObj()" />
   </form>
-
+<div id="removeReturn"> </div>
   <h1>Index</h1>
 
-  <form method="post" action="http://localhost:8000/indexKey">
+  <form id="indexKey">
     Type:<input type="text" name="type1" id="type1" /> Index:<input type="text" name=
-    "index1" id="index1" /> <input type="submit" />
+    "index1" id="index1" /> 
+     <input type="button" value="Index" onclick="indexKey()" />
   </form>
-
+<div id="indexReturn"> </div>
   <h1>Publish to a channel</h1>
 
-  <form method="post" action="http://localhost:8000/publish">
+  <form id="publish">
     Object:<input type="text" name="publishObject1" id="publishObject1" />
     Channel:<input type="text" name="publishChannel1" id="publishChannel1" />
-    <input type="submit" />
+     <input type="button" value="Publish" onclick="publish()" />
   </form>
-
+<div id="publishReturn"> </div>
   <h1>Subscribe to a channel</h1>
 <form id="subs">
   Channel :<input type="text" name="subscribeChannel1" id="subscribeChannel1">

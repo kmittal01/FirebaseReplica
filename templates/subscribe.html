@@ -1,15 +1,34 @@
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 	<TITLE>Make a new User</TITLE>
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-	<script src="firebase.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script>
+function subscribe() {
+	var serializedData = $("#subs").serialize();
+		$.ajax({
+				type: 'post',
+			url: 'http://localhost:8000/subscribe',
+			data: serializedData,
+			success: function(data) {
+				$('#msg').html(data);
+				setTimeout('subscribe()', 1000);
+			},
+			error: function(XMLHttpRequest, textstatus, error) { 
+				console.log(error);					
+			}		
+		});
+}
+</script>
 </HEAD>
 <BODY>
 <H1>Subscribe to a channel</H1>
-<form method="post" action="../subscribe">
+<form id="subs">
 	Channel :<input type="text" name="subscribeChannel1" id="subscribeChannel1">
 	Limit: <input type="text" name="subscribeLimit1" id="subscribeLimit1">
-	<input type="submit">
+	<input type="button" value="send" id="sub1" onclick="subscribe()">
 </form>
+<div id="msg"> </div>
 </BODY>
 </HTML>

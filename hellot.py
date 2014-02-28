@@ -18,26 +18,18 @@ class Subscriber1(tornado.web.RequestHandler):
 		self.render('subscribe.html')	
 class DbInsert(tornado.web.RequestHandler):
 	def post(self):
-		#r=redis.StrictRedis(host='localhost',port=6379,db=0)
-		#r.set('foo','bar')
-		#result=r.get('foo')
-		self.write(result)
 		object1=self.get_argument('object')
 		type1=self.get_argument('type')
 		db.execute("Insert into Obj_Table (`J_Obj`,`Type`,`Timestamp`) Values (%s,%s,%s)",object1,type1,time.time() )
 		json_data=json.loads(object1)
 		row=db.query("select * from Obj_Table Order by id desc")
 		new_id=row[0].Id
-		self.write(str(row[0].Id)+"<br>")
-		#self.write(json_data['name'])
+		self.write(str(row[0].Id))
 		indexkeys=list()
 		noIndex=True
-		self.write("Select * from IndexTable Where Type="+type1)
 		for row in db.query("Select * from IndexTable Where Type=\""+type1+"\""):
 			indexkeys.append(str(row.Index))
 			noIndex=False
-		self.write(str(indexkeys))
-		self.write(str(noIndex))
 		if noIndex:
 			for k,v in json_data.items():
 				db.execute("Insert into KeyValueTable Values(%s,%s,%s)",new_id,k,v )
@@ -97,6 +89,7 @@ class RedisPublish(tornado.web.RequestHandler):
 		publishChannel1=self.get_argument('publishChannel1')
 		r = redis.StrictRedis(host='localhost', port=6379, db=0)
 		r.zadd(publishChannel1,time.time(),publishObject1)
+		self.write("published")
 class RedisSubscribe(tornado.web.RequestHandler):
 	def post(self):
 		subscribeChannel1=self.get_argument('subscribeChannel1')
