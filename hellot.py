@@ -6,6 +6,7 @@ import tornado.options
 import tornado.web
 import torndb
 import time
+import redis
 from tornado.options import define,options
 define("port",default=8000,help="tornado will run on the given port",type=int)
 
@@ -15,6 +16,10 @@ class IndexHandler(tornado.web.RequestHandler):
 	
 class DbInsert(tornado.web.RequestHandler):
 	def post(self):
+		#r=redis.StrictRedis(host='localhost',port=6379,db=0)
+		#r.set('foo','bar')
+		#result=r.get('foo')
+		self.write(result)
 		object1=self.get_argument('object')
 		type1=self.get_argument('type')
 		db.execute("Insert into Obj_Table (`J_Obj`,`Type`,`Timestamp`) Values (%s,%s,%s)",object1,type1,time.time() )
@@ -50,10 +55,11 @@ class DbSearch(tornado.web.RequestHandler):
 		value1=self.get_argument('value1')
 		parameter1=self.get_argument('parameter1')
 		gle1=self.get_argument('gle1')
+		gle2=self.get_argument('gle2')
 		pValue1=self.get_argument('parameterValue1')
 		limit1=self.get_argument('limit1','1000')
 		a=list()
-		for row in db.query("Select * from KeyValueTable where `Key` ='" +str(key1)+"' and `Value`='"+str(value1)+"' Limit "+limit1):
+		for row in db.query("Select * from KeyValueTable where `Key` ='" +str(key1)+"' and `Value` "+gle2+" '"+str(value1)+"' Limit "+limit1):
 			self.write (str(row.Id)+"<br>")
 			a.append(str(row.Id))
 		a=tuple(a)
@@ -83,11 +89,27 @@ class DbIndex (tornado.web.RequestHandler):
 		db.execute("Insert into IndexTable Values (\""+type1+"\",\""+index1+"\")")
 		self.write("Insert into IndexTable Values (\""+type1+"\",\""+index1+"\")")
 		#self.render('index.html')
+class RedisPublish(tornado.web.RequestHandler):
+	def post(self):
+		publishObject1=self.get_argument('publishObject1')
+		publishChannel1=self.get_argument('publishChannel1')
+		r = redis.StrictRedis(host='localhost', port=6379, db=0)
+		r.zadd(publishChannel1,time.time(),publishObject1)
+class RedisSubscribe(tornado.web.RequestHandler):
+	def post(self):
+		subscribeChannel1=self.get_argument('subscribeChannel1')
+		subscribeLimit1=self.get_argument('subscribeLimit1')
+		r = redis.StrictRedis(host='localhost', port=6379, db=0)
+		row=r.zrange(subscribeChannel1,0,-1,withscores=True) 
+		self.write(str(row[0])+"<br>")
+		#	self.write(str(row[1])+"<br>")
 if __name__ == "__main__":
 	tornado.options.parse_command_line()
 	db = torndb.Connection("localhost", "tordata",user="root",password="ksh")
 	app=tornado.web.Application(
-		handlers=[(r"/",IndexHandler),(r"/insert",DbInsert),(r"/query",DbQuery),(r"/search",DbSearch),(r"/remove",DbRemove),(r"/indexKey",DbIndex)],
+		handlers=[(r"/",IndexHandler),(r"/insert",DbInsert),(r"/query",DbQuery),
+		(r"/search",DbSearch),(r"/remove",DbRemove),(r"/indexKey",DbIndex),
+		(r"/publish",RedisPublish),(r"/subscribe",RedisSubscribe)],
 		template_path=os.path.join(os.path.dirname(__file__),"templates"),
 		debug=True
 		)

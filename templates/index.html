@@ -21,6 +21,7 @@
 <H1>Search an object by Key-Value</H1>
 <FORM method="post" action="../search">
 	Key:<input type="text" name="key1" id="key1">
+	G/L/E:<input type="text" name="gle2" id="gle2" placeholder="= | < | > | <= | >=">
 	Value:<input type="text" name="value1" id="value1">
 	<br>
 	Parameter:<input type="text" name="parameter1" id="parameter1">
@@ -41,5 +42,17 @@ Type:<Input type="text" name="type1" id="type1">
 Index:<Input type="text" name="index1" id="index1">	
 <input type="submit">
 </form>
+<H1>Publish to a channel</H1>
+<form method="post" action="../publish">
+	Object:<input type="text" name="publishObject1" id="publishObject1">
+	Channel:<input type="text" name="publishChannel1" id="publishChannel1">
+	<input type="submit">
+</form>
+<H1>Subscribe to a channel</H1>
+<form method="post" action="../subscribe">
+	Channel :<input type="text" name="subscribeChannel1" id="subscribeChannel1">
+	Limit: <input type="text" name="subscribeLimit1" id="subscribeLimit1">
+	<input type="submit">
+</form>
 </BODY>
-</HTML
+</HTML>
