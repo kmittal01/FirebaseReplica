@@ -13,7 +13,9 @@ define("port",default=8000,help="tornado will run on the given port",type=int)
 class IndexHandler(tornado.web.RequestHandler):
 	def get(self):
 		self.render('index.html')
-	
+class Subscriber1(tornado.web.RequestHandler):
+	def get(self):
+		self.render('subscribe.html')	
 class DbInsert(tornado.web.RequestHandler):
 	def post(self):
 		#r=redis.StrictRedis(host='localhost',port=6379,db=0)
@@ -98,10 +100,11 @@ class RedisPublish(tornado.web.RequestHandler):
 class RedisSubscribe(tornado.web.RequestHandler):
 	def post(self):
 		subscribeChannel1=self.get_argument('subscribeChannel1')
-		subscribeLimit1=self.get_argument('subscribeLimit1')
+		#subscribeLimit1=self.get_argument('subscribeLimit1')
 		r = redis.StrictRedis(host='localhost', port=6379, db=0)
 		row=r.zrange(subscribeChannel1,0,-1,withscores=True) 
-		self.write(str(row[0])+"<br>")
+		for r in row:
+			self.write(str(r[0])+"<br>")
 		#	self.write(str(row[1])+"<br>")
 if __name__ == "__main__":
 	tornado.options.parse_command_line()
@@ -109,8 +112,9 @@ if __name__ == "__main__":
 	app=tornado.web.Application(
 		handlers=[(r"/",IndexHandler),(r"/insert",DbInsert),(r"/query",DbQuery),
 		(r"/search",DbSearch),(r"/remove",DbRemove),(r"/indexKey",DbIndex),
-		(r"/publish",RedisPublish),(r"/subscribe",RedisSubscribe)],
+		(r"/publish",RedisPublish),(r"/subscribe",RedisSubscribe),(r"/subscriber1",Subscriber1)],
 		template_path=os.path.join(os.path.dirname(__file__),"templates"),
+		static_path=os.path.join(os.path.dirname(__file__), "static"),
 		debug=True
 		)
 	http_server=tornado.httpserver.HTTPServer(app)
