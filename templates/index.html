@@ -1,7 +1,5 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>Make a new User</title>
@@ -23,7 +21,9 @@ function query2() {
   myDataRef=new firebase();
   var queryId=$("#Id1").val();
   myDataRef.query(queryId,function(data) {
-    $("#queryReturn").html(data);
+   for (var r=0;r<data.length;r++){
+   alert((data[r].Id));
+    }
   });
   
 }
@@ -38,7 +38,11 @@ function search2() {
   var parameterValue1=$("#parameterValue1").val(); 
   var limit1=$("#limit1").val();
   myDataRef.search(key1,gle2,value1,parameter1,gle1,parameterValue1,limit1, function(data) {
-          $('#searchReturn').html(data);
+          var array=[];
+          for (var r=0;r<data.length;r++){
+            array.push((data[r].Id)+"<br>");
+        }
+          $('#searchReturn').html(array);
         });
 }
 function removeObj2() {
@@ -64,7 +68,7 @@ function publish2() {
   myDataRef=new firebase();
   var publishObject1=$("#publishObject1").val();
   var publishChannel1=$("#publishChannel1").val();
-  myDataRef.publish(publishObject1,publishChannel1,function(data) {
+   myDataRef.publish(publishObject1,publishChannel1,function(data) {
     $("#publishReturn").html(data);
   });
 }
@@ -73,8 +77,11 @@ function subscribe2() {
   var subscribeChannel1=$("#subscribeChannel1").val();
   var subscribeLimit1=$("#subscribeLimit1").val();
   myDataRef.subscribe(subscribeChannel1,subscribeLimit1,function(data) {
-    $("#subscribeReturn").html(data);
-    alert("function passed"+data);
+    var array=[];
+          for (var r=0;r<data.length;r++){
+            array.push((data[r].Obj.user)+"<br>");
+        }
+    $("#subscribeReturn").html(array);
   });
 }
 </script>

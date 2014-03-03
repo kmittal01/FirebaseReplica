@@ -33,16 +33,20 @@ class DbInsert(tornado.web.RequestHandler):
 		if noIndex:
 			for k,v in json_data.items():
 				db.execute("Insert into KeyValueTable Values(%s,%s,%s)",new_id,k,v )
-		else:
+		else: 
 			for k,v in json_data.items():
 				if (indexkeys.count(k)!=0):
 					db.execute("Insert into KeyValueTable Values(%s,%s,%s)",new_id,k,v )
 class DbQuery(tornado.web.RequestHandler):
 	def post(self):
+		a=''
 		id1=self.get_argument('Id1')
 		id1='('+id1+')'
 		for row in db.query("Select * from Obj_Table where Id In "+id1):
-			self.write ("{\"Id\":"+str(row.Id) +",\"Obj\":"+ str(row.J_Obj)+",\"Type\":\""+str(row.Type)+"\",\"Timestamp\":\""+str(row.Timestamp)+"\"}<br>")
+			a=a+("{\"Id\":"+str(row.Id) +",\"Obj\":"+ str(row.J_Obj)+",\"Type\":\""+str(row.Type)+"\",\"Timestamp\":\""+str(row.Timestamp)+"\"},")
+		a=a.strip(',')
+		a='['+a+']'
+		self.write((a))
 class DbSearch(tornado.web.RequestHandler):
 	def post(self):
 		key1=self.get_argument('key1')
@@ -54,16 +58,19 @@ class DbSearch(tornado.web.RequestHandler):
 		limit1=self.get_argument('limit1','1000')
 		a=list()
 		for row in db.query("Select * from KeyValueTable where `Key` ='" +str(key1)+"' and `Value` "+gle2+" '"+str(value1)+"' Limit "+limit1):
-			self.write (str(row.Id)+"<br>")
 			a.append(str(row.Id))
 		a=tuple(a)
 		a=str(a)
 		if bool(a.strip(',)')):
 			a=a.strip(',)')
 			a=a+')'
-
+		str1=''
 		for row in db.query("Select * from Obj_Table where Id IN "+str(a)+" and `"+str(parameter1)+"`" +gle1+ "\""+str(pValue1)+"\"" ):
-				self.write ("{\"Id\":"+str(row.Id) +",\"Obj\":"+ str(row.J_Obj)+",\"Type\":\""+str(row.Type)+"\",\"Timestamp\":\""+str(row.Timestamp)+"\"}"+"<br>")
+				str1=str1+ ("{\"Id\":"+str(row.Id) +",\"Obj\":"+ str(row.J_Obj)+",\"Type\":\""+str(row.Type)+"\",\"Timestamp\":\""+str(row.Timestamp)+"\"},")
+		str1=str1.strip(',')
+		str1='['+str1+']'
+		self.write(str1)
+
 class DbRemove (tornado.web.RequestHandler):
 	def post(self):
 		removeId1=self.get_argument('removeId1')
@@ -76,7 +83,7 @@ class DbIndex (tornado.web.RequestHandler):
 		type1=self.get_argument('type1')
 		index1=self.get_argument('index1')
 		db.execute("Insert into IndexTable Values (\""+type1+"\",\""+index1+"\")")
-		self.write("Insert into IndexTable Values (\""+type1+"\",\""+index1+"\")")
+		self.write(index1+" indexed for "+type1);
 		#self.render('index.html')
 class RedisPublish(tornado.web.RequestHandler):
 	def post(self):
@@ -89,10 +96,18 @@ class RedisSubscribe(tornado.web.RequestHandler):
 	def post(self):
 		subscribeChannel1=self.get_argument('subscribeChannel1')
 		#subscribeLimit1=self.get_argument('subscribeLimit1')
+		str1=''
 		r = redis.StrictRedis(host='localhost', port=6379, db=0)
 		row=r.zrange(subscribeChannel1,0,-1,withscores=True) 
-		for r in row:
-			self.write(str(r[0]))
+		for p in row:
+			p="\"Obj\":"+str(p[0])+",\"Timestamp\":"+str(p[1])
+		#	p=str(p).lstrip('(')
+		#	p=p.strip(')')
+			p='{'+p+'},'
+			str1=str1+p
+		str1=str1.strip(',')
+		str1='['+str1+']'
+		self.write(str1)
 		#	self.write(str(row[1])+"<br>")
 if __name__ == "__main__":
 	tornado.options.parse_command_line()

@@ -3,7 +3,6 @@ function firebase () {
 
   firebase.prototype.insert=function(object1,type1,callback) {
   var serializedData2 ='object='+object1+'&type='+type1;
-  alert(serializedData2);
   $.ajax({
     type: 'post',
     url: 'http://localhost:8000/insert',
@@ -21,7 +20,11 @@ function firebase () {
       url: 'http://localhost:8000/query',
       data: 'Id1='+queryId,
       async:true,
-      success: callback,
+      success: function(data){
+        alert(data);
+        json_obj=JSON.parse(data);
+                   callback(json_obj);
+      },
       error: function(XMLHttpRequest, textstatus, error) { 
           console.log(error);         
       }
@@ -35,7 +38,10 @@ firebase.prototype.search=function(key1,gle2,value1,parameter1,gle1,parameterVal
         url: 'http://localhost:8000/search',
         data: serializedData2,
         async:true,
-        success: callback,
+        success: function(data){
+        var json_obj=JSON.parse(data);
+        callback(json_obj);
+      },
       error: function(XMLHttpRequest, textstatus, error) { 
           console.log(error);         
       }
@@ -85,11 +91,17 @@ firebase.prototype.publish=function (publishObject1,publishChannel1,callback) {
 }
 firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,callback) {
   var serializedData = 'subscribeChannel1='+subscribeChannel1+'&subscribeLimit1='+subscribeLimit1;
+    var thisfunc=this;
     $.ajax({
         type: 'post',
       url: 'http://localhost:8000/subscribe',
       data: serializedData,
-      success: callback,
+      async:true,
+      success: function(data){
+        var json_obj=JSON.parse(data);
+        callback(json_obj);
+        setTimeout(firebase.prototype.subscribe(subscribeChannel1,subscribeLimit1,callback),3000);
+         },
       error: function(XMLHttpRequest, textstatus, error) { 
         console.log(error);         
       }   
