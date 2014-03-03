@@ -13,9 +13,9 @@ define("port",default=8000,help="tornado will run on the given port",type=int)
 class IndexHandler(tornado.web.RequestHandler):
 	def get(self):
 		self.render('index.html')
-class Subscriber1(tornado.web.RequestHandler):
+class RenderFirebase(tornado.web.RequestHandler):
 	def get(self):
-		self.render('subscribe.html')	
+		self.render('firebase.js')	
 class DbInsert(tornado.web.RequestHandler):
 	def post(self):
 		object1=self.get_argument('object')
@@ -57,16 +57,11 @@ class DbSearch(tornado.web.RequestHandler):
 			self.write (str(row.Id)+"<br>")
 			a.append(str(row.Id))
 		a=tuple(a)
-		#self.write(str(a))
-		#self.write(parameter1)
-		#self.write(pValue1)
-		#self.write(gle1)
 		a=str(a)
 		if bool(a.strip(',)')):
 			a=a.strip(',)')
 			a=a+')'
 
-		self.write("<br> Select * from Obj_Table where Id IN "+a+" and `"+str(parameter1)+"`" +gle1+" \""+str(pValue1)+"\"<br>")
 		for row in db.query("Select * from Obj_Table where Id IN "+str(a)+" and `"+str(parameter1)+"`" +gle1+ "\""+str(pValue1)+"\"" ):
 				self.write ("{\"Id\":"+str(row.Id) +",\"Obj\":"+ str(row.J_Obj)+",\"Type\":\""+str(row.Type)+"\",\"Timestamp\":\""+str(row.Timestamp)+"\"}"+"<br>")
 class DbRemove (tornado.web.RequestHandler):
@@ -97,7 +92,7 @@ class RedisSubscribe(tornado.web.RequestHandler):
 		r = redis.StrictRedis(host='localhost', port=6379, db=0)
 		row=r.zrange(subscribeChannel1,0,-1,withscores=True) 
 		for r in row:
-			self.write(str(r[0])+"<br>")
+			self.write(str(r[0]))
 		#	self.write(str(row[1])+"<br>")
 if __name__ == "__main__":
 	tornado.options.parse_command_line()
@@ -105,7 +100,7 @@ if __name__ == "__main__":
 	app=tornado.web.Application(
 		handlers=[(r"/",IndexHandler),(r"/insert",DbInsert),(r"/query",DbQuery),
 		(r"/search",DbSearch),(r"/remove",DbRemove),(r"/indexKey",DbIndex),
-		(r"/publish",RedisPublish),(r"/subscribe",RedisSubscribe),(r"/subscriber1",Subscriber1)],
+		(r"/publish",RedisPublish),(r"/subscribe",RedisSubscribe),(r"/firebase.js",RenderFirebase)],
 		template_path=os.path.join(os.path.dirname(__file__),"templates"),
 		static_path=os.path.join(os.path.dirname(__file__), "static"),
 		debug=True
