@@ -8,6 +8,7 @@ import torndb
 import time
 import redis
 from tornado.options import define,options
+import logging
 define("port",default=8000,help="tornado will run on the given port",type=int)
 
 class IndexHandler(tornado.web.RequestHandler):
@@ -49,6 +50,8 @@ class DbQuery(tornado.web.RequestHandler):
 		self.write((a))
 class DbSearch(tornado.web.RequestHandler):
 	def post(self):
+		logging.warning('test')
+		logging.info("starting torando web server")
 		key1=self.get_argument('key1')
 		value1=self.get_argument('value1')
 		parameter1=self.get_argument('parameter1')
@@ -61,16 +64,26 @@ class DbSearch(tornado.web.RequestHandler):
 			a.append(str(row.Id))
 		a=tuple(a)
 		a=str(a)
-		if bool(a.strip(',)')):
-			a=a.strip(',)')
-			a=a+')'
-		str1=''
-		for row in db.query("Select * from Obj_Table where Id IN "+str(a)+" and `"+str(parameter1)+"`" +gle1+ "\""+str(pValue1)+"\"" ):
-				str1=str1+ ("{\"Id\":"+str(row.Id) +",\"Obj\":"+ str(row.J_Obj)+",\"Type\":\""+str(row.Type)+"\",\"Timestamp\":\""+str(row.Timestamp)+"\"},")
-		str1=str1.strip(',')
-		str1='['+str1+']'
-		self.write(str1)
-
+		#self.write(a)
+		if(a=='()'):
+			str1="[{\"Id\":null,\"Obj\":null,\"Type\":null,\"Timestamp\":null}]"
+			self.write(str1)
+		else:
+			if bool(a.strip(',)')):
+				a=a.strip(',)')
+				a=a+')'
+			str1=''
+			for row in db.query("Select * from Obj_Table where Id IN "+str(a)+" and `"+str(parameter1)+"`" +gle1+ "\""+str(pValue1)+"\"" ):
+					str1=str1+ ("{\"Id\":"+str(row.Id) +",\"Obj\":"+ str(row.J_Obj)+",\"Type\":\""+str(row.Type)+"\",\"Timestamp\":\""+str(row.Timestamp)+"\"},")
+			#self.write("Select * from Obj_Table where Id IN "+str(a)+" and `"+str(parameter1)+"`" +gle1+ "\""+str(pValue1)+"\"");
+			if(str1!=''):
+				logging.warning('in if clause'+str1)
+				str1=str1.strip(',')
+				str1='['+str1+']'
+				self.write(str1)
+			else:
+				logging.warning('in else clause'+str1)
+				str1=str1+ ("{\"Id\":null,\"Obj\":null,\"Type\":null,\"Timestamp\":null}")
 class DbRemove (tornado.web.RequestHandler):
 	def post(self):
 		removeId1=self.get_argument('removeId1')

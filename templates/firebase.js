@@ -23,7 +23,7 @@ function firebase () {
       success: function(data){
         alert(data);
         json_obj=JSON.parse(data);
-                   callback(json_obj);
+        callback(json_obj);
       },
       error: function(XMLHttpRequest, textstatus, error) { 
           console.log(error);         
@@ -39,6 +39,7 @@ firebase.prototype.search=function(key1,gle2,value1,parameter1,gle1,parameterVal
         data: serializedData2,
         async:true,
         success: function(data){
+          alert(data);
         var json_obj=JSON.parse(data);
         callback(json_obj);
       },
@@ -98,9 +99,10 @@ firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,callback
       data: serializedData,
       async:true,
       success: function(data){
+        //here compare the timstamps before updating the data
         var json_obj=JSON.parse(data);
         callback(json_obj);
-        setTimeout(firebase.prototype.subscribe(subscribeChannel1,subscribeLimit1,callback),3000);
+       setTimeout(firebase.prototype.subscribe(subscribeChannel1,subscribeLimit1,callback),3000);
          },
       error: function(XMLHttpRequest, textstatus, error) { 
         console.log(error);         

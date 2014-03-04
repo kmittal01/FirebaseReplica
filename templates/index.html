@@ -20,9 +20,9 @@ function insert2() {
 function query2() {
   myDataRef=new firebase();
   var queryId=$("#Id1").val();
-  myDataRef.query(queryId,function(data) {
-   for (var r=0;r<data.length;r++){
-   alert((data[r].Id));
+  myDataRef.query(queryId,function(data){
+    for (var i=0;i<data.length;i++){
+      alert(data[i].Id);
     }
   });
   
@@ -39,6 +39,7 @@ function search2() {
   var limit1=$("#limit1").val();
   myDataRef.search(key1,gle2,value1,parameter1,gle1,parameterValue1,limit1, function(data) {
           var array=[];
+          alert(data.length);
           for (var r=0;r<data.length;r++){
             array.push((data[r].Id)+"<br>");
         }
@@ -77,11 +78,12 @@ function subscribe2() {
   var subscribeChannel1=$("#subscribeChannel1").val();
   var subscribeLimit1=$("#subscribeLimit1").val();
   myDataRef.subscribe(subscribeChannel1,subscribeLimit1,function(data) {
-    var array=[];
-          for (var r=0;r<data.length;r++){
-            array.push((data[r].Obj.user)+"<br>");
-        }
+     var array=[];
+           for (var r=0;r<data.length;r++){
+             array.push((data[r].Timestamp)+"<br>");
+         }
     $("#subscribeReturn").html(array);
+
   });
 }
 </script>
