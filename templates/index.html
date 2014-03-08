@@ -37,9 +37,17 @@ function search2() {
   var gle1=$("#gle1").val();
   var parameterValue1=$("#parameterValue1").val(); 
   var limit1=$("#limit1").val();
-  myDataRef.search(key1,gle2,value1,parameter1,gle1,parameterValue1,limit1, function(data) {
+  var argumentsObj= new Object();
+  argumentsObj.key1=key1;
+  argumentsObj.gle2=gle2;
+  argumentsObj.value1=value1;
+  // argumentsObj.parameter1=parameter1;
+  // argumentsObj.gle1=gle1;
+  // argumentsObj.parameterValue1=parameterValue1;
+  // argumentsObj.limit1=limit1;
+
+  myDataRef.search(argumentsObj, function(data) {
           var array=[];
-          alert(data.length);
           for (var r=0;r<data.length;r++){
             array.push((data[r].Id)+"<br>");
         }
@@ -77,12 +85,12 @@ function subscribe2() {
   myDataRef=new firebase();
   var subscribeChannel1=$("#subscribeChannel1").val();
   var subscribeLimit1=$("#subscribeLimit1").val();
-  myDataRef.subscribe(subscribeChannel1,subscribeLimit1,function(data) {
+  myDataRef.subscribe(subscribeChannel1,subscribeLimit1,0,function(data) {
      var array=[];
            for (var r=0;r<data.length;r++){
              array.push((data[r].Timestamp)+"<br>");
-         }
-    $("#subscribeReturn").html(array);
+        }
+   $("#subscribeReturn").html(array);
 
   });
 }

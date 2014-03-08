@@ -50,15 +50,15 @@ class DbQuery(tornado.web.RequestHandler):
 		self.write((a))
 class DbSearch(tornado.web.RequestHandler):
 	def post(self):
-		logging.warning('test')
-		logging.info("starting torando web server")
 		key1=self.get_argument('key1')
 		value1=self.get_argument('value1')
 		parameter1=self.get_argument('parameter1')
 		gle1=self.get_argument('gle1')
 		gle2=self.get_argument('gle2')
 		pValue1=self.get_argument('parameterValue1')
-		limit1=self.get_argument('limit1','1000')
+		limit1=self.get_argument('limit1')
+		if limit1=='*':
+			limit1='30'
 		a=list()
 		for row in db.query("Select * from KeyValueTable where `Key` ='" +str(key1)+"' and `Value` "+gle2+" '"+str(value1)+"' Limit "+limit1):
 			a.append(str(row.Id))
@@ -75,14 +75,11 @@ class DbSearch(tornado.web.RequestHandler):
 			str1=''
 			for row in db.query("Select * from Obj_Table where Id IN "+str(a)+" and `"+str(parameter1)+"`" +gle1+ "\""+str(pValue1)+"\"" ):
 					str1=str1+ ("{\"Id\":"+str(row.Id) +",\"Obj\":"+ str(row.J_Obj)+",\"Type\":\""+str(row.Type)+"\",\"Timestamp\":\""+str(row.Timestamp)+"\"},")
-			#self.write("Select * from Obj_Table where Id IN "+str(a)+" and `"+str(parameter1)+"`" +gle1+ "\""+str(pValue1)+"\"");
 			if(str1!=''):
-				logging.warning('in if clause'+str1)
 				str1=str1.strip(',')
 				str1='['+str1+']'
 				self.write(str1)
 			else:
-				logging.warning('in else clause'+str1)
 				str1=str1+ ("{\"Id\":null,\"Obj\":null,\"Type\":null,\"Timestamp\":null}")
 class DbRemove (tornado.web.RequestHandler):
 	def post(self):
@@ -96,7 +93,7 @@ class DbIndex (tornado.web.RequestHandler):
 		type1=self.get_argument('type1')
 		index1=self.get_argument('index1')
 		db.execute("Insert into IndexTable Values (\""+type1+"\",\""+index1+"\")")
-		self.write(index1+" indexed for "+type1);
+		self.write(index1+" indexed for "+type1)
 		#self.render('index.html')
 class RedisPublish(tornado.web.RequestHandler):
 	def post(self):
@@ -105,23 +102,37 @@ class RedisPublish(tornado.web.RequestHandler):
 		r = redis.StrictRedis(host='localhost', port=6379, db=0)
 		r.zadd(publishChannel1,time.time(),publishObject1)
 		self.write("published")
+		logging.info("published")
 class RedisSubscribe(tornado.web.RequestHandler):
-	def post(self):
+	def post(self):	
+		logging.info("inside subscribe")
 		subscribeChannel1=self.get_argument('subscribeChannel1')
-		#subscribeLimit1=self.get_argument('subscribeLimit1')
+		subscribeLimit1=self.get_argument('subscribeLimit1')
+		timestamp=self.get_argument('timestamp')
 		str1=''
 		r = redis.StrictRedis(host='localhost', port=6379, db=0)
-		row=r.zrange(subscribeChannel1,0,-1,withscores=True) 
+		timestampnew=0
+		logging.info("outside check loop")
+		while timestampnew<=timestamp:
+			logging.info("inside check loop")
+			logging.info("new time " + str(timestampnew) + " old time "+ str(timestamp))
+
+			row=r.zrevrange(subscribeChannel1,0,0,withscores=True) 
+			if str(row)!='[]':
+				timestampnew=str(row[0][1])
+				time.sleep(2)
+			else:
+				self.write('nothing in channel')
+				time.sleep(2)
+		# loopfunc(subscribeChannel1,timestamp)
+		row=r.zrevrange(subscribeChannel1,0,-1,withscores=True)
 		for p in row:
 			p="\"Obj\":"+str(p[0])+",\"Timestamp\":"+str(p[1])
-		#	p=str(p).lstrip('(')
-		#	p=p.strip(')')
 			p='{'+p+'},'
 			str1=str1+p
 		str1=str1.strip(',')
 		str1='['+str1+']'
 		self.write(str1)
-		#	self.write(str(row[1])+"<br>")
 if __name__ == "__main__":
 	tornado.options.parse_command_line()
 	db = torndb.Connection("localhost", "tordata",user="root",password="ksh")
