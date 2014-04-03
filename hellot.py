@@ -9,11 +9,15 @@ import time
 import redis
 from tornado.options import define,options
 import logging
-define("port",default=8000,help="tornado will run on the given port",type=int)
+import asyncpubsub
+from uuid import uuid4
+from sets import Set
+define("port",default=8002,help="tornado will run on the given port",type=int)
 
-class IndexHandler(tornado.web.RequestHandler):
+class DetailHandler (tornado.web.RequestHandler):
 	def get(self):
-		self.render('index.html')
+		session = uuid4()
+		self.render("index.html", session=session)
 class RenderFirebase(tornado.web.RequestHandler):
 	def get(self):
 		self.render('firebase.js')	
@@ -95,56 +99,68 @@ class DbIndex (tornado.web.RequestHandler):
 		db.execute("Insert into IndexTable Values (\""+type1+"\",\""+index1+"\")")
 		self.write(index1+" indexed for "+type1)
 		#self.render('index.html')
-class RedisPublish(tornado.web.RequestHandler):
-	def post(self):
-		publishObject1=self.get_argument('publishObject1')
-		publishChannel1=self.get_argument('publishChannel1')
-		r = redis.StrictRedis(host='localhost', port=6379, db=0)
-		r.zadd(publishChannel1,time.time(),publishObject1)
-		self.write("published")
-		logging.info("published")
-class RedisSubscribe(tornado.web.RequestHandler):
-	def post(self):	
-		logging.info("inside subscribe")
-		subscribeChannel1=self.get_argument('subscribeChannel1')
-		subscribeLimit1=self.get_argument('subscribeLimit1')
-		timestamp=self.get_argument('timestamp')
-		str1=''
-		r = redis.StrictRedis(host='localhost', port=6379, db=0)
-		timestampnew=0
-		logging.info("outside check loop")
-		while timestampnew<=timestamp:
-			logging.info("inside check loop")
-			logging.info("new time " + str(timestampnew) + " old time "+ str(timestamp))
+# class RedisPublish(tornado.web.RequestHandler):
+# 	def post(self):
+# 		publishObject1=self.get_argument('publishObject1')
+# 		publishChannel1=self.get_argument('publishChannel1')
+# 		r = redis.StrictRedis(host='localhost', port=6379, db=0)
+# 		r.zadd(publishChannel1,time.time(),publishObject1)
+# 		self.write("published")
+# 		logging.info("published")
+# class RedisSubscribe(tornado.web.RequestHandler):
+# 	def post(self):	
+# 		logging.info("inside subscribe")
+# 		subscribeChannel1=self.get_argument('subscribeChannel1')
+# 		subscribeLimit1=self.get_argument('subscribeLimit1')
+# 		timestamp=self.get_argument('timestamp')
+# 		str1=''
+# 		r = redis.StrictRedis(host='localhost', port=6379, db=0)
+# 		timestampnew=0
+# 		logging.info("outside check loop")
+# 		while timestampnew<=timestamp:
+# 			logging.info("inside check loop")
+# 			logging.info("new time " + str(timestampnew) + " old time "+ str(timestamp))
 
-			row=r.zrevrange(subscribeChannel1,0,0,withscores=True) 
-			if str(row)!='[]':
-				timestampnew=str(row[0][1])
-				time.sleep(2)
-			else:
-				self.write('nothing in channel')
-				time.sleep(2)
-		# loopfunc(subscribeChannel1,timestamp)
-		row=r.zrevrange(subscribeChannel1,0,-1,withscores=True)
-		for p in row:
-			p="\"Obj\":"+str(p[0])+",\"Timestamp\":"+str(p[1])
-			p='{'+p+'},'
-			str1=str1+p
-		str1=str1.strip(',')
-		str1='['+str1+']'
-		self.write(str1)
-if __name__ == "__main__":
-	tornado.options.parse_command_line()
+# 			row=r.zrevrange(subscribeChannel1,0,0,withscores=True) 
+# 			if str(row)!='[]':
+# 				timestampnew=str(row[0][1])
+# 				time.sleep(2)
+# 			else:
+# 				self.write('nothing in channel')
+# 				time.sleep(2)
+# 		# loopfunc(subscribeChannel1,timestamp)
+# 		row=r.zrevrange(subscribeChannel1,0,-1,withscores=True)
+# 		for p in row:
+# 			p="\"Obj\":"+str(p[0])+",\"Timestamp\":"+str(p[1])
+# 			p='{'+p+'},'
+# 			str1=str1+p
+# 		str1=str1.strip(',')
+# 		str1='['+str1+']'
+# 		self.write(str1)
+
+class Application(tornado.web.Application):
+	def __init__(self):
+		self.subscribeCart=asyncpubsub.SubscribeCart()
+		logging.info("a new subsc object formed")
+		handlers=[(r"/",DetailHandler),(r"/insert",DbInsert),
+		(r"/query",DbQuery),(r"/search",DbSearch),(r"/remove",DbRemove),(r"/indexKey",DbIndex),
+		(r"/publish",asyncpubsub.PublishHandler),(r"/subscribe",asyncpubsub.SubscriptionHandler),
+		(r"/firebase.js",RenderFirebase)] 
+
+		settings =  {
+		'template_path':'templates',
+		'static_path':'static',
+		'debug':True
+		}
+
+		tornado.web.Application.__init__(self,handlers,**settings)
+
+if __name__=='__main__':
+	tornado.options.parse_command_line	()
 	db = torndb.Connection("localhost", "tordata",user="root",password="ksh")
-	app=tornado.web.Application(
-		handlers=[(r"/",IndexHandler),(r"/insert",DbInsert),(r"/query",DbQuery),
-		(r"/search",DbSearch),(r"/remove",DbRemove),(r"/indexKey",DbIndex),
-		(r"/publish",RedisPublish),(r"/subscribe",RedisSubscribe),(r"/firebase.js",RenderFirebase)],
-		template_path=os.path.join(os.path.dirname(__file__),"templates"),
-		static_path=os.path.join(os.path.dirname(__file__), "static"),
-		debug=True
-		)
-	http_server=tornado.httpserver.HTTPServer(app)
-	http_server.listen(options.port)
+	app=Application()
+	server=tornado.httpserver.HTTPServer(app)
+	server.listen(8002)
 	tornado.ioloop.IOLoop.instance().start()
+
 	

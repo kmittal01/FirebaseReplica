@@ -5,7 +5,7 @@ function firebase () {
   var serializedData2 ='object='+object1+'&type='+type1;
   $.ajax({
     type: 'post',
-    url: 'http://localhost:8001/insert',
+    url: 'http://localhost:8002/insert',
     data: serializedData2,
     async:true,
     success: callback,
@@ -17,7 +17,7 @@ function firebase () {
   firebase.prototype.query=function (queryId,callback) {
     $.ajax({
       type: 'post',
-      url: 'http://localhost:8001/query',
+      url: 'http://localhost:8002/query',
       data: 'Id1='+queryId,
       async:true,
       success: function(data){
@@ -51,7 +51,7 @@ firebase.prototype.search=function(argumentsObj,callback) {
   var serializedData2 = 'key1='+key1+'&gle2='+gle2+'&value1='+value1+'&parameter1='+parameter1+'&gle1='+gle1+'&parameterValue1='+parameterValue1+'&limit1='+limit1;
     $.ajax({
         type: 'post',
-        url: 'http://localhost:8001/search',
+        url: 'http://localhost:8002/search',
         data: serializedData2,
         async:true,
         success: function(data){
@@ -67,7 +67,7 @@ firebase.prototype.removeObj=function (removeId1,callback) {
   var serializedData2 = 'removeId1='+removeId1;
     $.ajax({
         type: 'post',
-        url: 'http://localhost:8001/remove',
+        url: 'http://localhost:8002/remove',
         data: serializedData2,
         async:true,
         success: callback,
@@ -82,7 +82,7 @@ firebase.prototype.indexKey=function (index1,type1,callback) {
   var serializedData2 = 'index1='+index1+'&type1='+type1;
     $.ajax({
         type: 'post',
-        url: 'http://localhost:8001/indexKey',
+        url: 'http://localhost:8002/indexKey',
         data: serializedData2,
         async:true,
         success: callback,
@@ -91,12 +91,11 @@ firebase.prototype.indexKey=function (index1,type1,callback) {
         }
      });
 }
-
 firebase.prototype.publish=function (publishObject1,publishChannel1,callback) {
   var serializedData2 = 'publishObject1='+publishObject1+'&publishChannel1='+publishChannel1;
     $.ajax({
         type: 'post',
-        url: 'http://localhost:8001/publish',
+        url: 'http://localhost:8002/publish',
         data: serializedData2,
         async:true,
         success: callback,
@@ -105,30 +104,63 @@ firebase.prototype.publish=function (publishObject1,publishChannel1,callback) {
         }
      });
 }
-firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,timestamp,callback) {
+// firebase.prototype.publish=function (publishObject1,publishChannel1,callback) {
+//   var serializedData2 = 'publishObject1='+publishObject1+'&publishChannel1='+publishChannel1;
+//     $.ajax({
+//         type: 'post',
+//         url: 'http://localhost:8002/publish',
+//         data: serializedData2,
+//         async:true,
+//         success: callback,
+//         error: function(XMLHttpRequest, textstatus, error) { 
+//           console.log(textstatus);         
+//         }
+//      });
+// }
+firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,timestamp,session,callback) {
 
-   //  if (callback==='undefined') {
-   //   callback=timestamp;
-   //   timestamp=0;
-   // }
-
-  var serializedData = 'subscribeChannel1='+subscribeChannel1+'&subscribeLimit1='+subscribeLimit1+'&timestamp='+timestamp;
-
+  var serializedData = 'subscribeChannel1='+subscribeChannel1+'&subscribeLimit1='+subscribeLimit1+'&timestamp='+timestamp+'&session='+session;
+  //alert(session);
     $.ajax({
         type: 'post',
-      url: 'http://localhost:8001/subscribe',
+      url: 'http://localhost:8002/subscribe',
       data: serializedData,
       async:true,
       success: function (data){
-        var json_obj=JSON.parse(data);
-        callback(json_obj);
-        var timestamp=json_obj[0].Timestamp;
-        setTimeout('firebase.prototype.subscribe("'+subscribeChannel1+'","'+subscribeLimit1+'","'+timestamp+'",'+callback+')',1000);
-        alert('firebase.prototype.subscribe('+subscribeChannel1+','+subscribeLimit1+','+timestamp+',callback)');
+         var json_obj=JSON.parse(data);
+         callback(json_obj);
+         var timestamp=json_obj[0].Timestamp;
+        setTimeout('firebase.prototype.subscribe("'+subscribeChannel1+'","'+subscribeLimit1+'","'+timestamp+'","'+session+'",'+callback+')',1000);
          },
       error: function(XMLHttpRequest, textstatus, error) { 
         console.log(error);         
       }   
     });
 }
+// firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,timestamp,callback) {
+
+//    //  if (callback==='undefined') {
+//    //   callback=timestamp;
+//    //   timestamp=0;
+//    // }
+
+//   var serializedData = 'subscribeChannel1='+subscribeChannel1+'&subscribeLimit1='+subscribeLimit1+'&timestamp='+timestamp;
+
+//     $.ajax({
+//         type: 'post',
+//       url: 'http://localhost:8002/subscribe',
+//       data: serializedData,
+//       async:true,
+//       success: function (data){
+//         var json_obj=JSON.parse(data);
+//         callback(json_obj);
+//         var timestamp=json_obj[0].Timestamp;
+//         setTimeout('firebase.prototype.subscribe("'+subscribeChannel1+'","'+subscribeLimit1+'","'+timestamp+'",'+callback+')',1000);
+//         alert('firebase.prototype.subscribe('+subscribeChannel1+','+subscribeLimit1+','+timestamp+',callback)');
+//          },
+//       error: function(XMLHttpRequest, textstatus, error) { 
+//         console.log(error);         
+//       }   
+//     });
+// }
 }

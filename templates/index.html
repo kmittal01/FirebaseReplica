@@ -72,28 +72,49 @@ function indexKey2() {
   });
   
 }
-
 function publish2() {
   myDataRef=new firebase();
   var publishObject1=$("#publishObject1").val();
   var publishChannel1=$("#publishChannel1").val();
    myDataRef.publish(publishObject1,publishChannel1,function(data) {
-    $("#publishReturn").html(data);
+    // $("#publishReturn").html(data);
   });
 }
 function subscribe2() {
   myDataRef=new firebase();
   var subscribeChannel1=$("#subscribeChannel1").val();
-  var subscribeLimit1=$("#subscribeLimit1").val();
-  myDataRef.subscribe(subscribeChannel1,subscribeLimit1,0,function(data) {
-     var array=[];
-           for (var r=0;r<data.length;r++){
-             array.push((data[r].Timestamp)+"<br>");
-        }
-   $("#subscribeReturn").html(array);
-
+  var session=$("#session").val();
+  //alert(session);
+  //var subscribeLimit1=$("#subscribeLimit1").val();
+  myDataRef.subscribe(subscribeChannel1,20,0,session,function(data) {
+    var subsRet='';
+    for (i=0;i<data.length;++i){
+      subsRet=subsRet+data[i].Obj.name+'<br>';
+}
+$("#subscribeReturn").html(subsRet);
   });
 }
+// function publish2() {
+//   myDataRef=new firebase();
+//   var publishObject1=$("#publishObject1").val();
+//   var publishChannel1=$("#publishChannel1").val();
+//    myDataRef.publish(publishObject1,publishChannel1,function(data) {
+//     $("#publishReturn").html(data);
+//   });
+// }
+// function subscribe2() {
+//   myDataRef=new firebase();
+//   var subscribeChannel1=$("#subscribeChannel1").val();
+//   var subscribeLimit1=$("#subscribeLimit1").val();
+//   myDataRef.subscribe(subscribeChannel1,subscribeLimit1,0,function(data) {
+//      var array=[];
+//            for (var r=0;r<data.length;r++){
+//              array.push((data[r].Timestamp)+"<br>");
+//         }
+//    $("#subscribeReturn").html(array);
+
+//   });
+// }
 </script>
 </head>
 
@@ -136,7 +157,7 @@ function subscribe2() {
   </form>
 <div id="removeReturn"> </div>
   <h1>Index</h1>
-
+-
   <form id="indexKey">
     Index:<input type="text" name="index1" id="index1" /> 
     Type:<input type="text" name="type1" id="type1" /> 
