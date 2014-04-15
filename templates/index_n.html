@@ -1,0 +1,119 @@
+<html> 
+<head>
+<title> Google Docs</title>
+-<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/jquery.js"></script>
+<script src="/firebase.js"></script>
+<script>
+var undomsg;
+var Channel1="chdoc14";
+var channel_user_details="chud5";
+var nick="no nick choosen";
+function publish(undomsg){
+		var msg = undomsg;
+		//to be added in firebase
+		msg = msg.replace(/\r?\n/g, '<br />');
+		msg = msg.replace(';', 'dec59hex3b');
+		msg = msg.replace('"', 'dec34hex22');
+		msg = msg.replace('\'', 'dec39hex27');
+		msg='{"content":"'+msg+'"}'
+	  	myDataRef=new firebase();
+		myDataRef.publish(msg,Channel1,function(data) {
+	  });
+	  myDataRef.removeps(Channel1,0,-3, function(data) {
+     
+  });	
+}
+function subscribe_content() {
+
+ 	myDataRef=new firebase();
+  	var session=$("#session").val();
+  	myDataRef.subscribe(Channel1,20,0,session,function(data) {
+	msg1= data[0].Obj.content.replace(/<br.*?>/g, '\n');
+	msg1= msg1.replace('dec59hex3b', ';');
+	msg1= msg1.replace('dec34hex22', '"');
+	msg1= msg1.replace('dec39hex27', '\'');
+	
+	msg2= data[1].Obj.content.replace(/<br.*?>/g, '\n');
+	msg2= msg2.replace('dec59hex3b', ';');
+	msg2= msg2.replace('dec34hex22', '"');
+	msg2= msg2.replace('dec39hex27', '\'');
+	$("#send").val(msg1);
+	undomsg=msg2;
+  });
+}
+function publish_user_details(nick){
+		//to be added in firebase
+		msg='{"nick":"'+nick+'"}';
+		myDataRef=new firebase();
+		myDataRef.publish(msg,channel_user_details,function(data) {
+	  });
+}
+function subscribe_user_details() {
+
+ 	myDataRef=new firebase();
+  	var session=$("#session").val();
+  	myDataRef.subscribe(channel_user_details,20,0,session,function(data) {
+  		// alert(data[0].Obj.nick);
+	var array='';
+	for (var r=0;r<data.length;r++){
+            array=array+(data[r].Obj.nick)+"<br>";
+        }
+          $('#userlist1').html(array);
+  });
+}
+function undo(){
+$("#send").val(undomsg);	
+publish(undomsg);
+}
+
+function details(){
+nick=prompt("please choose a nick","no nick choosen");
+publish_user_details(nick);
+}
+$(document).ready(function() {
+	subscribe_content();
+	subscribe_user_details();
+	$('#send').bind('keyup', function(e) {	
+		var msg = $(this).val();
+		publish(msg);
+	})
+});
+
+function newDoc()
+  {
+  window.location.assign("about:blank")
+  }
+
+function logout(){
+msg='{"nick":"'+nick+'"}';
+myDataRef=new firebase();
+
+myDataRef.removepsbykey(channel_user_details,msg, function(data) {     
+  });		
+newDoc();
+}
+
+</script>
+</head>
+<body onload="details()">
+	<div style="width:80%;float:left;">
+		 <!-- <img src="/static/undo.jpeg" width="90" height="50" alt="submit" onclick="undo()"/> -->
+	<h1 > Google Docs</h1>
+	</div>
+	<div style="width:18%;margin-left:1180px">
+ <input type="button" value="Logout" id="Logout" onclick="logout()" >
+ </div>
+  	<br />
+ <div style="width:80%;height:100%;float:left;">
+ <input type="button" value="Undo" id="undo1" onclick="undo()" >
+ <input type="button" value="Redo" id="undo1" onclick="undo()">
+<textarea id="send" name="msg" style="width:100%;height:100%;"></textarea>	
+</div>
+<div style="width:18%;height:5%;margin-top:65px;background-color:green;margin-left:1040px"></div>
+<div id="userlist1" name="userlist1" style="width:18%;height:100%;margin-top:25px;margin-left:1040px"></div>
+<div>
+<input  type="hidden" id="session" value="{{ session }}"></input>
+</div>
+</body>
+</html>

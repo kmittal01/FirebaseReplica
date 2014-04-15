@@ -41,10 +41,10 @@ function search2() {
   argumentsObj.key1=key1;
   argumentsObj.gle2=gle2;
   argumentsObj.value1=value1;
-  // argumentsObj.parameter1=parameter1;
-  // argumentsObj.gle1=gle1;
-  // argumentsObj.parameterValue1=parameterValue1;
-  // argumentsObj.limit1=limit1;
+  argumentsObj.parameter1=parameter1;
+  argumentsObj.gle1=gle1;
+  argumentsObj.parameterValue1=parameterValue1;
+  argumentsObj.limit1=limit1;
 
   myDataRef.search(argumentsObj, function(data) {
           var array=[];
@@ -84,37 +84,27 @@ function subscribe2() {
   myDataRef=new firebase();
   var subscribeChannel1=$("#subscribeChannel1").val();
   var session=$("#session").val();
+  alert(session);
   //alert(session);
   //var subscribeLimit1=$("#subscribeLimit1").val();
   myDataRef.subscribe(subscribeChannel1,20,0,session,function(data) {
     var subsRet='';
     for (i=0;i<data.length;++i){
-      subsRet=subsRet+data[i].Obj.name+'<br>';
+      subsRet=subsRet+data[i].Rank+'   '+data[i].Obj.name+'   '+data[i].Timestamp+'<br>';
 }
 $("#subscribeReturn").html(subsRet);
   });
 }
-// function publish2() {
-//   myDataRef=new firebase();
-//   var publishObject1=$("#publishObject1").val();
-//   var publishChannel1=$("#publishChannel1").val();
-//    myDataRef.publish(publishObject1,publishChannel1,function(data) {
-//     $("#publishReturn").html(data);
-//   });
-// }
-// function subscribe2() {
-//   myDataRef=new firebase();
-//   var subscribeChannel1=$("#subscribeChannel1").val();
-//   var subscribeLimit1=$("#subscribeLimit1").val();
-//   myDataRef.subscribe(subscribeChannel1,subscribeLimit1,0,function(data) {
-//      var array=[];
-//            for (var r=0;r<data.length;r++){
-//              array.push((data[r].Timestamp)+"<br>");
-//         }
-//    $("#subscribeReturn").html(array);
 
-//   });
-// }
+function removeps() {
+  myDataRef=new firebase();
+  var removeChannel1=$("#removeChannel1").val();
+  var rankStart1=$("#rankStart1").val();
+  var rankEnd1=$("#rankEnd1").val();
+   myDataRef.removeps(removeChannel1,rankStart1,rankEnd1, function(data) {
+     $("#removepsReturn").html(data);
+  });
+}
 </script>
 </head>
 
@@ -157,7 +147,6 @@ $("#subscribeReturn").html(subsRet);
   </form>
 <div id="removeReturn"> </div>
   <h1>Index</h1>
--
   <form id="indexKey">
     Index:<input type="text" name="index1" id="index1" /> 
     Type:<input type="text" name="type1" id="type1" /> 
@@ -182,3 +171,13 @@ $("#subscribeReturn").html(subsRet);
 </body>
 </html>
 
+  <h1>Remove and Element from the channel</h1>
+
+  <form id="removeps">
+    Channel:<input type="text" name="removeChannel1" id="removeChannel1" />
+    Rank Start:<input type="text" name="rankStart1" id="rankStart1" />
+    Rank End:<input type="text" name="rankEnd1" id="rankEnd1" />
+     <input type="button" value="Publish" onclick="removeps()" />
+  </form>
+<div id="removepsReturn"> </div>
+<input type="hidden" id="session" value="{{ session }}" />

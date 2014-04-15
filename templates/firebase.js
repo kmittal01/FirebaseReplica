@@ -1,5 +1,4 @@
 function firebase () {
- 
 
   firebase.prototype.insert=function(object1,type1,callback) {
   var serializedData2 ='object='+object1+'&type='+type1;
@@ -21,7 +20,7 @@ function firebase () {
       data: 'Id1='+queryId,
       async:true,
       success: function(data){
-        alert(data);
+        //alert(data);
         json_obj=JSON.parse(data);
         callback(json_obj);
       },
@@ -36,10 +35,10 @@ firebase.prototype.search=function(argumentsObj,callback) {
   var key1 = argumentsObj.key1;
   var gle2 = argumentsObj.gle2;
   var value1 = argumentsObj.value1;
-  var parameter1 = argumentsObj.parameter1;
-  var gle1 = argumentsObj.gle1;
-  var parameterValue1=argumentsObj.parameterValue1;
-  var limit1=argumentsObj.limit1;
+  // var parameter1 = argumentsObj.parameter1;
+  // var gle1 = argumentsObj.gle1;
+  // var parameterValue1=argumentsObj.parameterValue1;
+  // var limit1=argumentsObj.limit1;
   if(typeof(limit1)==='undefined'){
    limit1='*';
   }
@@ -48,6 +47,7 @@ firebase.prototype.search=function(argumentsObj,callback) {
    gle1='>';
    parameterValue1='0';
   }
+  alert(parameter1+gle1+parameterValue1);
   var serializedData2 = 'key1='+key1+'&gle2='+gle2+'&value1='+value1+'&parameter1='+parameter1+'&gle1='+gle1+'&parameterValue1='+parameterValue1+'&limit1='+limit1;
     $.ajax({
         type: 'post',
@@ -104,19 +104,6 @@ firebase.prototype.publish=function (publishObject1,publishChannel1,callback) {
         }
      });
 }
-// firebase.prototype.publish=function (publishObject1,publishChannel1,callback) {
-//   var serializedData2 = 'publishObject1='+publishObject1+'&publishChannel1='+publishChannel1;
-//     $.ajax({
-//         type: 'post',
-//         url: 'http://localhost:8002/publish',
-//         data: serializedData2,
-//         async:true,
-//         success: callback,
-//         error: function(XMLHttpRequest, textstatus, error) { 
-//           console.log(textstatus);         
-//         }
-//      });
-// }
 firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,timestamp,session,callback) {
 
   var serializedData = 'subscribeChannel1='+subscribeChannel1+'&subscribeLimit1='+subscribeLimit1+'&timestamp='+timestamp+'&session='+session;
@@ -128,39 +115,44 @@ firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,timestam
       async:true,
       success: function (data){
          var json_obj=JSON.parse(data);
+       //alert(data);
          callback(json_obj);
          var timestamp=json_obj[0].Timestamp;
-        setTimeout('firebase.prototype.subscribe("'+subscribeChannel1+'","'+subscribeLimit1+'","'+timestamp+'","'+session+'",'+callback+')',1000);
+        setTimeout('firebase.prototype.subscribe("'+subscribeChannel1+'","'+subscribeLimit1+'","'+timestamp+'","'+session+'",'+callback+')',100);
          },
       error: function(XMLHttpRequest, textstatus, error) { 
         console.log(error);         
       }   
     });
 }
-// firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,timestamp,callback) {
 
-//    //  if (callback==='undefined') {
-//    //   callback=timestamp;
-//    //   timestamp=0;
-//    // }
+firebase.prototype.removeps=function (removeChannel1,rankStart1,rankEnd1,callback) {
+  var serializedData2 = 'removeChannel1='+removeChannel1+'&rankStart1='+rankStart1+'&rankEnd1='+rankEnd1;
 
-//   var serializedData = 'subscribeChannel1='+subscribeChannel1+'&subscribeLimit1='+subscribeLimit1+'&timestamp='+timestamp;
+    $.ajax({
+        type: 'post',
+        url: 'http://localhost:8002/removeps',
+        data: serializedData2,
+        async:true,
+        success: callback,
+        error: function(XMLHttpRequest, textstatus, error) { 
+          console.log(textstatus);         
+        }
+     });
+}
 
-//     $.ajax({
-//         type: 'post',
-//       url: 'http://localhost:8002/subscribe',
-//       data: serializedData,
-//       async:true,
-//       success: function (data){
-//         var json_obj=JSON.parse(data);
-//         callback(json_obj);
-//         var timestamp=json_obj[0].Timestamp;
-//         setTimeout('firebase.prototype.subscribe("'+subscribeChannel1+'","'+subscribeLimit1+'","'+timestamp+'",'+callback+')',1000);
-//         alert('firebase.prototype.subscribe('+subscribeChannel1+','+subscribeLimit1+','+timestamp+',callback)');
-//          },
-//       error: function(XMLHttpRequest, textstatus, error) { 
-//         console.log(error);         
-//       }   
-//     });
-// }
+firebase.prototype.removepsbykey=function (removeChannel1,key,callback) {
+var serializedData2 = 'removeChannel1='+removeChannel1+'&key='+key;
+
+    $.ajax({
+        type: 'post',
+        url: 'http://localhost:8002/removepsbykey',
+        data: serializedData2,
+        async:true,
+        success: callback,
+        error: function(XMLHttpRequest, textstatus, error) { 
+          console.log(textstatus);         
+        }
+     });
+}
 }

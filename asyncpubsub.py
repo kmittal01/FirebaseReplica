@@ -1,14 +1,15 @@
-import tornado.web
+import json
+import os
 import tornado.httpserver
 import tornado.ioloop
 import tornado.options
-from uuid import uuid4
-import json
-import os
+import tornado.web
 import torndb
 import time
 import redis
+from tornado.options import define,options
 import logging
+from uuid import uuid4
 from sets import Set
 class RenderFirebase(tornado.web.RequestHandler):
 	def get(self):
@@ -42,6 +43,25 @@ class SubscribeCart(object):
 		r.zadd(publishChannel1,time.time(),publishObject1)
 		self.notifyCallbacks(str(publishChannel1))
 
+	def RemoveMessage(self,channel1,rankStart1,rankEnd1):
+		r = redis.StrictRedis(host='localhost', port=6379, db=0)
+		if r.exists(channel1):
+			r.zremrangebyrank(channel1,rankStart1,rankEnd1)
+			self.notifyCallbacks(str(channel1))
+		else:
+			logging.info("the channel doesn't exists")
+
+	def RemoveMessageByKey(self,channel1,key):
+		logging.info("in RemoveMessageByKey");
+		r = redis.StrictRedis(host='localhost', port=6379, db=0)
+		if r.exists(channel1):
+			r.zrem(channel1,key)
+			logging.info("hey it appears to work"+str(channel1)+str(key));
+			self.notifyCallbacks(str(channel1))
+		else:
+			logging.info("the channel doesn't exists")
+
+
 	def notifyCallbacks(self,publishChannel1):
 		if publishChannel1 in self.callbacks:
 			logging.info("in if of notifyCallbacks")
@@ -54,35 +74,19 @@ class SubscribeCart(object):
 		callback(self.getMessage(publishChannel1))
 
 	def getMessage(self,Channel1):
-		logging.info("in getMessage")
 		str1=''
-		# self.Channel1=Channel1
 		r = redis.StrictRedis(host='localhost', port=6379, db=0)
-		logging.info("outside check loop")
-		# while self.timestampnew<=self.timestamp:
-		# 	logging.info("new time " + str(timestampnew) + " old time "+ str(timestamp))
-
-		# 	row=r.zrevrange(subscribeChannel1,0,0,withscores=True) 
-		# 	if str(row)!='[]':
-		# 		self.timestampnew=str(row[0][1])
-		# 		time.sleep(2)
-		# 	else:l
-		# 		self.write('nothing in channel')
-		# 		time.sleep(2)
-		# loopfunc(subscribeChannel1,timestamp)
+		count=r.zcard(str(Channel1))
 		row=r.zrevrange(Channel1,0,-1,withscores=True)
 		for p in row:
-			p="\"Obj\":"+str(p[0])+",\"Timestamp\":"+str(p[1])
+			p="\"Rank\":"+str(int(count)-1)+",\"Obj\":"+str(p[0])+",\"Timestamp\":"+str(p[1])
 			p='{'+p+'},'
 			str1=str1+p
+			count=str(int(count)-1)
 		str1=str1.strip(',')
 		str1='['+str1+']'
+		logging.info(str1)
 		return str1
-# class DetailHandler (tornado.web.RequestHandler):
-# 	def get(self):
-# 		session = uuid4()
-# 		self.render("index.html", session=session)
-
 
 class SubscriptionHandler(tornado.web.RequestHandler):
 	@tornado.web.asynchronous
@@ -110,29 +114,18 @@ class PublishHandler(tornado.web.RequestHandler):
 		publishObject1=self.get_argument('publishObject1')
 		self.application.subscribeCart.publishMessage(publishChannel1,publishObject1)
 
-# class Application(tornado.web.Application):
-# 	def __init__(self):
-# 		self.subscribeCart=SubscribeCart()
-# 		logging.info("a new subsc object formed")
-# 		handlers = [
-# 		(r'/',DetailHandler),
-# 		(r'/subscribe',SubscriptionHandler),
-# 		(r'/publish',PublishHandler),
-# 		(r"/firebase.js",RenderFirebase)
-# 		] 
+class RemoveHandler(tornado.web.RequestHandler):
+	def post(self):
+		logging.info("in remove handler")
+		channel1=self.get_argument('removeChannel1')
+		rankStart1=self.get_argument('rankStart1')
+		rankEnd1=self.get_argument('rankEnd1')
+		self.application.subscribeCart.RemoveMessage(channel1,rankStart1,rankEnd1)
 
-# 		settings =  {
-# 		'template_path':'templates',
-# 		'static_path':'static',
-# 		'debug':True
-# 		}
-
-# 		tornado.web.Application.__init__(self,handlers,**settings)
-
-
-# if __name__=='__main__':
-# 	tornado.options.parse_command_line	()
-# 	app=Application()
-# 	server=tornado.httpserver.HTTPServer(app)
-# 	server.listen(8002)
-# 	tornado.ioloop.IOLoop.instance().start()
+class RemoveHandlerByKey(tornado.web.RequestHandler):
+	def post(self):
+		logging.info("in remove handler")
+		channel1=self.get_argument('removeChannel1')
+		key=self.get_argument('key')
+		self.application.subscribeCart.RemoveMessageByKey(channel1,key)
+		logging.info("in RemoveMessageByKey1");
