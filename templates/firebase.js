@@ -35,10 +35,10 @@ firebase.prototype.search=function(argumentsObj,callback) {
   var key1 = argumentsObj.key1;
   var gle2 = argumentsObj.gle2;
   var value1 = argumentsObj.value1;
-  // var parameter1 = argumentsObj.parameter1;
-  // var gle1 = argumentsObj.gle1;
-  // var parameterValue1=argumentsObj.parameterValue1;
-  // var limit1=argumentsObj.limit1;
+  var parameter1 = argumentsObj.parameter1;
+  var gle1 = argumentsObj.gle1;
+  var parameterValue1=argumentsObj.parameterValue1;
+  var limit1=argumentsObj.limit1;
   if(typeof(limit1)==='undefined'){
    limit1='*';
   }
@@ -47,7 +47,7 @@ firebase.prototype.search=function(argumentsObj,callback) {
    gle1='>';
    parameterValue1='0';
   }
-  alert(parameter1+gle1+parameterValue1);
+  // alert(parameter1+gle1+parameterValue1);
   var serializedData2 = 'key1='+key1+'&gle2='+gle2+'&value1='+value1+'&parameter1='+parameter1+'&gle1='+gle1+'&parameterValue1='+parameterValue1+'&limit1='+limit1;
     $.ajax({
         type: 'post',
@@ -55,6 +55,7 @@ firebase.prototype.search=function(argumentsObj,callback) {
         data: serializedData2,
         async:true,
         success: function(data){
+        // alert(data);
         var json_obj=JSON.parse(data);
         callback(json_obj);
       },
@@ -114,8 +115,8 @@ firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,timestam
       data: serializedData,
       async:true,
       success: function (data){
+       // alert(data);
          var json_obj=JSON.parse(data);
-       //alert(data);
          callback(json_obj);
          var timestamp=json_obj[0].Timestamp;
         setTimeout('firebase.prototype.subscribe("'+subscribeChannel1+'","'+subscribeLimit1+'","'+timestamp+'","'+session+'",'+callback+')',100);

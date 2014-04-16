@@ -26,7 +26,7 @@ class SubscribeCart(object):
 		#debug here, the callbacks shouldn't be repeated
 		subscribeChannel1=str(subscribeChannel1)
 		self.callbacks.setdefault(subscribeChannel1,[]).append(callback)
-		logging.info(self.callbacks)
+		# logging.info(self.callbacks)
 
 	def addSubscription(self,subscribeChannel1,session):
 		session=str(session)
@@ -36,7 +36,7 @@ class SubscribeCart(object):
 				return
 
 		self.subscribers.setdefault(subscribeChannel1,[]).append(str(session))
-		logging.info(self.subscribers)
+		# logging.info(self.subscribers)
    
 	def publishMessage(self, publishChannel1,publishObject1):
 		r = redis.StrictRedis(host='localhost', port=6379, db=0)
@@ -64,13 +64,13 @@ class SubscribeCart(object):
 
 	def notifyCallbacks(self,publishChannel1):
 		if publishChannel1 in self.callbacks:
-			logging.info("in if of notifyCallbacks")
+			# logging.info("in if of notifyCallbacks")
 			for c in self.callbacks[publishChannel1]:
 				self.callbackHelper(c,publishChannel1)
 			self.callbacks[publishChannel1]=[]
 
 	def callbackHelper(self, callback,publishChannel1):
-		logging.info("in callbackHelper")
+		# logging.info("in callbackHelper")
 		callback(self.getMessage(publishChannel1))
 
 	def getMessage(self,Channel1):
@@ -85,7 +85,7 @@ class SubscribeCart(object):
 			count=str(int(count)-1)
 		str1=str1.strip(',')
 		str1='['+str1+']'
-		logging.info(str1)
+		# logging.info(str1)
 		return str1
 
 class SubscriptionHandler(tornado.web.RequestHandler):
@@ -101,8 +101,8 @@ class SubscriptionHandler(tornado.web.RequestHandler):
 			self.application.subscribeCart.register(self.on_message,subscribeChannel1)
 			
 	def on_message(self,message):
-		logging.info("on message invoked.. is something changed?")
-		logging.info("new message: "+message)
+		# logging.info("on message invoked.. is something changed?")
+		# logging.info("new message: "+message)
 		
 		self.write(message)
 		self.finish()

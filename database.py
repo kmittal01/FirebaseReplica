@@ -54,9 +54,13 @@ class DbSearch(tornado.web.RequestHandler):
 		gle2=self.get_argument('gle2')
 		pValue1=self.get_argument('parameterValue1')
 		limit1=self.get_argument('limit1')
+		logging.info("herere");
+		logging.info(limit1);
 		if limit1=='*':
 			limit1='30'
 		a=list()
+		
+		logging.info("Select * from KeyValueTable where `Key` ='" +str(key1)+"' and `Value` "+gle2+" '"+str(value1)+"' Limit "+limit1)
 		for row in db.query("Select * from KeyValueTable where `Key` ='" +str(key1)+"' and `Value` "+gle2+" '"+str(value1)+"' Limit "+limit1):
 			a.append(str(row.Id))
 		a=tuple(a)

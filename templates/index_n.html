@@ -1,110 +1,203 @@
 <html> 
 <head>
 <title> Google Docs</title>
--<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 <script src="/jquery.js"></script>
 <script src="/firebase.js"></script>
 <script>
-var undomsg;
-var Channel1="chdoc14";
-var channel_user_details="chud5";
-var nick="no nick choosen";
-function publish(undomsg){
-		var msg = undomsg;
-		//to be added in firebase
-		msg = msg.replace(/\r?\n/g, '<br />');
-		msg = msg.replace(';', 'dec59hex3b');
-		msg = msg.replace('"', 'dec34hex22');
-		msg = msg.replace('\'', 'dec39hex27');
-		msg='{"content":"'+msg+'"}'
-	  	myDataRef=new firebase();
-		myDataRef.publish(msg,Channel1,function(data) {
-	  });
-	  myDataRef.removeps(Channel1,0,-3, function(data) {
-     
-  });	
+var myIp;
+function ip_callback(o) {
+    myIp = o.host;
 }
+</script>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/jquery.js"></script>
+<script src="/firebase.js"></script>
+<script src="https://smart-ip.net/geoip-json?callback=ip_callback"></script>
+<script>
+
+var loginTime = new Date();
+var undomsg='';
+var Channel1 = "chdoc20";
+var channel_user_details = "chud9"; 
+var nick = "no nick choosen";
+var logId;
+var clearlogsstr='';
+var logshidden;
+function publish(undomsg) {
+
+var msg = undomsg;
+//to be added in firebase
+	msg = msg.replace(/\r?\n/g, '<br />');
+	msg = msg.replace(';', 'dec59hex3b');
+	msg = msg.replace('"', 'dec34hex22');
+	msg = msg.replace('\'', 'dec39hex27');
+	msg = '{"content":"' + msg +'"}'
+var myDataRef = new firebase();
+	
+	myDataRef.publish(msg,Channel1,function(data) {
+	});
+
+	myDataRef.removeps(Channel1,0,-3, function(data) {
+	});	
+}
+
 function subscribe_content() {
 
- 	myDataRef=new firebase();
-  	var session=$("#session").val();
-  	myDataRef.subscribe(Channel1,20,0,session,function(data) {
-	msg1= data[0].Obj.content.replace(/<br.*?>/g, '\n');
-	msg1= msg1.replace('dec59hex3b', ';');
-	msg1= msg1.replace('dec34hex22', '"');
-	msg1= msg1.replace('dec39hex27', '\'');
-	
-	msg2= data[1].Obj.content.replace(/<br.*?>/g, '\n');
-	msg2= msg2.replace('dec59hex3b', ';');
-	msg2= msg2.replace('dec34hex22', '"');
-	msg2= msg2.replace('dec39hex27', '\'');
-	$("#send").val(msg1);
-	undomsg=msg2;
-  });
+var myDataRef = new firebase();
+var session = $("#session").val();
+
+	myDataRef.subscribe(Channel1,20,0,session,function(data) {
+	var msg1 = data[0].Obj.content.replace(/<br.*?>/g, '\n');
+
+		msg1 = msg1.replace('dec59hex3b', ';');
+		msg1 = msg1.replace('dec34hex22', '"');
+		msg1 = msg1.replace('dec39hex27', '\'');
+	if(data.length>=2){
+	var msg2 = data[1].Obj.content.replace(/<br.*?>/g, '\n');
+		msg2 = msg2.replace('dec59hex3b', ';');
+		msg2 = msg2.replace('dec34hex22', '"');
+		msg2 = msg2.replace('dec39hex27', '\'');
+		undomsg = msg2;
+		}
+		$("#send").val(msg1);
+	});
 }
+
 function publish_user_details(nick){
-		//to be added in firebase
-		msg='{"nick":"'+nick+'"}';
-		myDataRef=new firebase();
-		myDataRef.publish(msg,channel_user_details,function(data) {
-	  });
+	
+//to be added in firebase
+var msg = '{"nick":"' + nick + '"}';
+	myDataRef = new firebase();
+	myDataRef.publish(msg,channel_user_details,function(data) {
+	});
 }
 function subscribe_user_details() {
 
- 	myDataRef=new firebase();
-  	var session=$("#session").val();
-  	myDataRef.subscribe(channel_user_details,20,0,session,function(data) {
-  		// alert(data[0].Obj.nick);
-	var array='';
-	for (var r=0;r<data.length;r++){
-            array=array+(data[r].Obj.nick)+"<br>";
-        }
-          $('#userlist1').html(array);
-  });
-}
-function undo(){
-$("#send").val(undomsg);	
-publish(undomsg);
+var myDataRef = new firebase();
+var session = $("#session").val();
+	myDataRef.subscribe(channel_user_details,20,0,session,function(data) {
+	var array = '';
+		for (var r = 0;r < data.length;r++) {
+			array = array + (data[r].Obj.nick) + "<br>";
+		}
+		$('#userlist1').html(array);
+	});
 }
 
-function details(){
-nick=prompt("please choose a nick","no nick choosen");
-publish_user_details(nick);
+function undo(){
+
+	$("#send").val(undomsg);	
+	publish(undomsg);
 }
-$(document).ready(function() {
+
+function insert(object1,type1) {
+  
+var myDataRef = new firebase();
+	myDataRef.insert(object1,type1,function(data) {
+	logId = data;
+	});
+}
+
+function newDoc() {
+
+  window.location.assign("about:blank")
+ }
+
+function details(){
+
 	subscribe_content();
 	subscribe_user_details();
-	$('#send').bind('keyup', function(e) {	
-		var msg = $(this).val();
+	nick = prompt("please choose a nick","no nick choosen");
+	publish_user_details(nick);
+	insert('{"uniqueName":"log","nick":"' + nick + '","loginTime":"' + loginTime + '", "ipAddress":"' + myIp + '"}','log');
+	
+}
+
+$(document).ready(function() {
+
+$('#send').bind('keyup', function(e) {	
+	var msg = $(this).val();
 		publish(msg);
 	})
 });
+//have to unsubscribe here
+function logout() {
+var msg ='{"nick":"' + nick + '"}';
+var myDataRef = new firebase();
+	myDataRef.removepsbykey(channel_user_details,msg, function(data) {     
+	newDoc();
+  	});
+}
+function logs() {
+  myDataRef=new firebase();
+  var key1='uniqueName';
+  var gle2='=';
+  var value1='log';
+  var parameter1='Type';
+  var gle1='=';
+  var parameterValue1='log'; 
+  var limit1='40';
+  var argumentsObj= new Object();
+  argumentsObj.key1=key1;
+  argumentsObj.gle2=gle2;
+  argumentsObj.value1=value1;
+  argumentsObj.parameter1=parameter1;
+  argumentsObj.gle1=gle1;
+  argumentsObj.parameterValue1=parameterValue1;
+  argumentsObj.limit1=limit1;
 
-function newDoc()
-  {
-  window.location.assign("about:blank")
+  myDataRef.search(argumentsObj, function(data) {
+          var array='';
+          if (data[0].Obj==null) {
+          	array="<br>Logs are empty";
+          }
+          else {
+          array='<br><table border="1"><tr><th>Id</th><th>Nick</th><th>Login Time</th><th>Ip Address</th></tr>';
+          for (var r=0;r<data.length;r++){
+        		clearlogsstr=clearlogsstr + data[r].Id + ',';
+          	array=array+('<tr><td>' + (data[r].Id) + ' </td><td>' +(data[r].Obj.nick) + ' </td><td>' + (data[r].Obj.loginTime) + ' </td><td>' + (data[r].Obj.ipAddress) + "</td></tr>");
+        		}
+        	array=array+'</table> ';
+        	}
+        	clearlogsstr = clearlogsstr.substring(0,clearlogsstr.length-1);
+          $('#logsresults').html(array);
+        });
+  if (logshidden) {
+  	logshidden=false;
+ 	$("#logsresults").show();	
   }
 
-function logout(){
-msg='{"nick":"'+nick+'"}';
-myDataRef=new firebase();
-
-myDataRef.removepsbykey(channel_user_details,msg, function(data) {     
-  });		
-newDoc();
 }
 
-</script>
-</head>
+function clearLogs() {
+var myDataRef=new firebase();
+myDataRef.removeObj(clearlogsstr,function(data) {
+	alert("data removed");
+  });
+}
+
+$(document).ready(function(){
+  $("#hideLogs").click(function(){
+  $("#logsresults").hide();
+  logshidden=true;
+});
+});
+
+</script></head>
 <body onload="details()">
-	<div style="width:80%;float:left;">
+	<div style="width:60%;float:left;">
 		 <!-- <img src="/static/undo.jpeg" width="90" height="50" alt="submit" onclick="undo()"/> -->
 	<h1 > Google Docs</h1>
 	</div>
-	<div style="width:18%;margin-left:1180px">
+	<div style="width:40%;margin-left:800px">
+ <input type="button" value="Show Logs" id="showLogs" onclick="logs()" >
+ <input type="button" value="Hide Logs" id="hideLogs" >
+ <input type="button" value="clearLogs" id="clearLogs" onclick="clearLogs()" >
  <input type="button" value="Logout" id="Logout" onclick="logout()" >
  </div>
   	<br />
+<div id="logsresults" name="logsresults"></div>
  <div style="width:80%;height:100%;float:left;">
  <input type="button" value="Undo" id="undo1" onclick="undo()" >
  <input type="button" value="Redo" id="undo1" onclick="undo()">

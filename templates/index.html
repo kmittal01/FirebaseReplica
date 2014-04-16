@@ -3,9 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>Make a new User</title>
-  <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-</script>
+<script src="/jquery.js"></script>
 <script src="/firebase.js"></script>
 <script>
 function insert2() {
@@ -41,10 +39,10 @@ function search2() {
   argumentsObj.key1=key1;
   argumentsObj.gle2=gle2;
   argumentsObj.value1=value1;
-  argumentsObj.parameter1=parameter1;
-  argumentsObj.gle1=gle1;
-  argumentsObj.parameterValue1=parameterValue1;
-  argumentsObj.limit1=limit1;
+  // argumentsObj.parameter1=parameter1;
+  // argumentsObj.gle1=gle1;
+  // argumentsObj.parameterValue1=parameterValue1;
+  // argumentsObj.limit1=limit1;
 
   myDataRef.search(argumentsObj, function(data) {
           var array=[];
