@@ -81,11 +81,12 @@ function publish2() {
 function subscribe2() {
   myDataRef=new firebase();
   var subscribeChannel1=$("#subscribeChannel1").val();
-  var session=$("#session").val();
-  alert(session);
+  // var session=$("#session").val();
+  // alert(session);
   //alert(session);
   //var subscribeLimit1=$("#subscribeLimit1").val();
-  myDataRef.subscribe(subscribeChannel1,20,0,session,function(data) {
+  // myDataRef.subscribe(subscribeChannel1,20,0,session,function(data) {
+  myDataRef.subscribe(subscribeChannel1,20,0,function(data) {
     var subsRet='';
     for (i=0;i<data.length;++i){
       subsRet=subsRet+data[i].Rank+'   '+data[i].Obj.name+'   '+data[i].Timestamp+'<br>';
@@ -177,5 +178,3 @@ function removeps() {
     Rank End:<input type="text" name="rankEnd1" id="rankEnd1" />
      <input type="button" value="Publish" onclick="removeps()" />
   </form>
-<div id="removepsReturn"> </div>
-<input type="hidden" id="session" value="{{ session }}" />

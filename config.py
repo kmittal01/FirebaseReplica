@@ -8,8 +8,7 @@ import logging
 from uuid import uuid4
 class IndexHandler (tornado.web.RequestHandler):
 	def get(self):
-		session = uuid4()
-		self.render("index_n.html", session=session)
+		self.render("index_n.html")
 
 class RenderFirebase(tornado.web.RequestHandler):
 	def get(self):
@@ -17,3 +16,8 @@ class RenderFirebase(tornado.web.RequestHandler):
 class RenderJquery(tornado.web.RequestHandler):
 	def get(self):
 		self.render('jquery.js')
+
+class RenderInitFunc (tornado.web.RequestHandler):
+	def post(self):
+		session = uuid4()
+		self.write(str(session))

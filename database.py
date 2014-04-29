@@ -95,3 +95,8 @@ class DbIndex (tornado.web.RequestHandler):
 		index1=self.get_argument('index1')
 		db.execute("Insert into IndexTable Values (\""+type1+"\",\""+index1+"\")")
 		self.write(index1+" indexed for "+type1)
+
+class RenderInitFunc (tornado.web.RequestHandler):
+	def post(self):
+		session = uuid4()
+		self.write(session)

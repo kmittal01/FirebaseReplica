@@ -24,7 +24,7 @@ class Application(tornado.web.Application):
 		handlers=[(r"/",config.IndexHandler),(r"/insert",database.DbInsert),
 		(r"/query",database.DbQuery),(r"/search",database.DbSearch),(r"/remove",database.DbRemove),(r"/indexKey",database.DbIndex),
 		(r"/publish",asyncpubsub.PublishHandler),(r"/removeps",asyncpubsub.RemoveHandler),(r"/removepsbykey",asyncpubsub.RemoveHandlerByKey),(r"/subscribe",asyncpubsub.SubscriptionHandler),
-		(r"/firebase.js",config.RenderFirebase),(r"/jquery.js",config.RenderJquery)] 
+		(r"/firebase.js",config.RenderFirebase),(r"/jquery.js",config.RenderJquery),(r"/initfunc",config.RenderInitFunc)] 
 
 		settings =  {
 		'template_path':'templates',

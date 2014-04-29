@@ -11,9 +11,9 @@ function ip_callback(o) {
 }
 </script>
 <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-<script src="/jquery.js"></script>
-<script src="/firebase.js"></script>
-<script src="https://smart-ip.net/geoip-json?callback=ip_callback"></script>
+<script src="jquery.js"></script>
+<script src="firebase.js"></script>
+<!-- <script src="https://smart-ip.net/geoip-json?callback=ip_callback"></script> -->
 <script>
 
 var loginTime = new Date();
@@ -45,11 +45,9 @@ var myDataRef = new firebase();
 function subscribe_content() {
 
 var myDataRef = new firebase();
-var session = $("#session").val();
 
-	myDataRef.subscribe(Channel1,20,0,session,function(data) {
+	myDataRef.subscribe(Channel1,20,0,function(data) {
 	var msg1 = data[0].Obj.content.replace(/<br.*?>/g, '\n');
-
 		msg1 = msg1.replace('dec59hex3b', ';');
 		msg1 = msg1.replace('dec34hex22', '"');
 		msg1 = msg1.replace('dec39hex27', '\'');
@@ -75,8 +73,7 @@ var msg = '{"nick":"' + nick + '"}';
 function subscribe_user_details() {
 
 var myDataRef = new firebase();
-var session = $("#session").val();
-	myDataRef.subscribe(channel_user_details,20,0,session,function(data) {
+	myDataRef.subscribe(channel_user_details,20,0,function(data) {
 	var array = '';
 		for (var r = 0;r < data.length;r++) {
 			array = array + (data[r].Obj.nick) + "<br>";
@@ -205,8 +202,7 @@ $(document).ready(function(){
 </div>
 <div style="width:18%;height:5%;margin-top:65px;background-color:green;margin-left:1040px"></div>
 <div id="userlist1" name="userlist1" style="width:18%;height:100%;margin-top:25px;margin-left:1040px"></div>
-<div>
-<input  type="hidden" id="session" value="{{ session }}"></input>
+<div id="hid1">
 </div>
 </body>
 </html>

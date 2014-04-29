@@ -1,5 +1,20 @@
-function firebase () {
+var session1;
+(function initfunc(){
+ $.ajax({
+    type: 'post',
+    url: 'http://localhost:8002/initfunc',
+    async:true,
+    success: function(data){
+      session=data;
+      // alert(session);
+    },
+    error: function(XMLHttpRequest, textstatus, error) { 
+        console.log(error);         
+      }
+  });
+})();
 
+function firebase () {
   firebase.prototype.insert=function(object1,type1,callback) {
   var serializedData2 ='object='+object1+'&type='+type1;
   $.ajax({
@@ -47,7 +62,6 @@ firebase.prototype.search=function(argumentsObj,callback) {
    gle1='>';
    parameterValue1='0';
   }
-  // alert(parameter1+gle1+parameterValue1);
   var serializedData2 = 'key1='+key1+'&gle2='+gle2+'&value1='+value1+'&parameter1='+parameter1+'&gle1='+gle1+'&parameterValue1='+parameterValue1+'&limit1='+limit1;
     $.ajax({
         type: 'post',
@@ -55,7 +69,6 @@ firebase.prototype.search=function(argumentsObj,callback) {
         data: serializedData2,
         async:true,
         success: function(data){
-        // alert(data);
         var json_obj=JSON.parse(data);
         callback(json_obj);
       },
@@ -105,10 +118,9 @@ firebase.prototype.publish=function (publishObject1,publishChannel1,callback) {
         }
      });
 }
-firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,timestamp,session,callback) {
+firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,timestamp,callback) {
 
-  var serializedData = 'subscribeChannel1='+subscribeChannel1+'&subscribeLimit1='+subscribeLimit1+'&timestamp='+timestamp+'&session='+session;
-  //alert(session);
+  var serializedData = 'subscribeChannel1='+subscribeChannel1+'&subscribeLimit1='+subscribeLimit1+'&timestamp='+timestamp+'&session='+session1;
     $.ajax({
         type: 'post',
       url: 'http://localhost:8002/subscribe',
@@ -119,7 +131,7 @@ firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,timestam
          var json_obj=JSON.parse(data);
          callback(json_obj);
          var timestamp=json_obj[0].Timestamp;
-        setTimeout('firebase.prototype.subscribe("'+subscribeChannel1+'","'+subscribeLimit1+'","'+timestamp+'","'+session+'",'+callback+')',100);
+         setTimeout('firebase.prototype.subscribe("'+subscribeChannel1+'","'+subscribeLimit1+'","'+timestamp+'",'+callback+')',100);
          },
       error: function(XMLHttpRequest, textstatus, error) { 
         console.log(error);         
