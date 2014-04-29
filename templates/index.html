@@ -6,6 +6,14 @@
 <script src="/jquery.js"></script>
 <script src="/firebase.js"></script>
 <script>
+function uChannel1() {
+  myDataRef=new firebase();
+  var unsubscribeChannel=$("#unsubscribeChannel").val();
+ 
+   myDataRef.unsubscribeChannel(unsubscribeChannel,function(data) {
+     $("#unsubscribeReturn").html(data);
+  });
+}
 function insert2() {
   myDataRef=new firebase();
   var object1=$("#insertObject1").val();
@@ -104,6 +112,8 @@ function removeps() {
      $("#removepsReturn").html(data);
   });
 }
+
+
 </script>
 </head>
 
@@ -167,8 +177,6 @@ function removeps() {
   <input type="button" value="send" id="sub1" onclick="subscribe2()">
 </form>
 <div id="subscribeReturn"> </div>
-</body>
-</html>
 
   <h1>Remove and Element from the channel</h1>
 
@@ -176,5 +184,16 @@ function removeps() {
     Channel:<input type="text" name="removeChannel1" id="removeChannel1" />
     Rank Start:<input type="text" name="rankStart1" id="rankStart1" />
     Rank End:<input type="text" name="rankEnd1" id="rankEnd1" />
-     <input type="button" value="Publish" onclick="removeps()" />
+     <input type="button" value="Remove" onclick="removeps()" />
   </form>
+<div id="removepsReturn"> </div>
+
+  <h1>Unsubscribe from a channel</h1>
+
+  <form id="unsubscribe">
+    Channel:<input type="text" name="unsubscribeChannel" id="unsubscribeChannel" />
+     <input type="button" value="unsubscribeChannel" onclick="uChannel1()" />
+  </form>
+<div id="unsubscribeReturn"> </div>
+</body>
+</html>

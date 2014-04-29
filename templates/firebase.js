@@ -1,4 +1,5 @@
-var session1;
+var session;
+var status;
 (function initfunc(){
  $.ajax({
     type: 'post',
@@ -119,8 +120,9 @@ firebase.prototype.publish=function (publishObject1,publishChannel1,callback) {
      });
 }
 firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,timestamp,callback) {
-
-  var serializedData = 'subscribeChannel1='+subscribeChannel1+'&subscribeLimit1='+subscribeLimit1+'&timestamp='+timestamp+'&session='+session1;
+  var serializedData = 'subscribeChannel1='+subscribeChannel1+'&subscribeLimit1='+subscribeLimit1+'&timestamp='+timestamp+'&session='+session;
+  status="subscribed";
+  // alert(serializedData);
     $.ajax({
         type: 'post',
       url: 'http://localhost:8002/subscribe',
@@ -128,10 +130,13 @@ firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,timestam
       async:true,
       success: function (data){
        // alert(data);
+         if (status==="subscribed"){
          var json_obj=JSON.parse(data);
+         // alert(json_obj)
          callback(json_obj);
          var timestamp=json_obj[0].Timestamp;
-         setTimeout('firebase.prototype.subscribe("'+subscribeChannel1+'","'+subscribeLimit1+'","'+timestamp+'",'+callback+')',100);
+           mysusbTimeOut=setTimeout('firebase.prototype.subscribe("'+subscribeChannel1+'","'+subscribeLimit1+'","'+timestamp+'",'+callback+')',100);
+          }       
          },
       error: function(XMLHttpRequest, textstatus, error) { 
         console.log(error);         
@@ -163,6 +168,24 @@ var serializedData2 = 'removeChannel1='+removeChannel1+'&key='+key;
         data: serializedData2,
         async:true,
         success: callback,
+        error: function(XMLHttpRequest, textstatus, error) { 
+          console.log(textstatus);         
+        }
+     });
+}
+
+firebase.prototype.unsubscribeChannel=function (unsubscribeChannel,callback) {
+var serializedData2 = 'unsubscribeChannel='+unsubscribeChannel+'&session='+session;
+    status="unsubscribed";
+    $.ajax({
+        type: 'post',
+        url: 'http://localhost:8002/unsubscribeChannel',
+        data: serializedData2,
+        async:true,
+        success: function(data){
+         clearTimeout(mysusbTimeOut);
+          callback(data);
+        },
         error: function(XMLHttpRequest, textstatus, error) { 
           console.log(textstatus);         
         }
