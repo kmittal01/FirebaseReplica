@@ -1,5 +1,5 @@
 var session;
-var status;
+var unsubscribed_channels=[];
 (function initfunc(){
  $.ajax({
     type: 'post',
@@ -121,21 +121,22 @@ firebase.prototype.publish=function (publishObject1,publishChannel1,callback) {
 }
 firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,timestamp,callback) {
   var serializedData = 'subscribeChannel1='+subscribeChannel1+'&subscribeLimit1='+subscribeLimit1+'&timestamp='+timestamp+'&session='+session;
-  status="subscribed";
-  // alert(serializedData);
+  index_of_channel = unsubscribed_channels.indexOf(subscribeChannel1);
+ 
+  if (index_of_channel>-1) {
+    unsubscribed_channels[index_of_channel]="removed_from_list"; 
+  } 
     $.ajax({
         type: 'post',
       url: 'http://localhost:8002/subscribe',
       data: serializedData,
       async:true,
       success: function (data){
-       // alert(data);
-         if (status==="subscribed"){
+         if (unsubscribed_channels.indexOf(subscribeChannel1)<0){
          var json_obj=JSON.parse(data);
-         // alert(json_obj)
          callback(json_obj);
          var timestamp=json_obj[0].Timestamp;
-           mysusbTimeOut=setTimeout('firebase.prototype.subscribe("'+subscribeChannel1+'","'+subscribeLimit1+'","'+timestamp+'",'+callback+')',100);
+           setTimeout('firebase.prototype.subscribe("'+subscribeChannel1+'","'+subscribeLimit1+'","'+timestamp+'",'+callback+')',100);
           }       
          },
       error: function(XMLHttpRequest, textstatus, error) { 
@@ -176,14 +177,21 @@ var serializedData2 = 'removeChannel1='+removeChannel1+'&key='+key;
 
 firebase.prototype.unsubscribeChannel=function (unsubscribeChannel,callback) {
 var serializedData2 = 'unsubscribeChannel='+unsubscribeChannel+'&session='+session;
-    status="unsubscribed";
+  
+    index_of_channel = unsubscribed_channels.indexOf(unsubscribeChannel);
+ 
+    if (index_of_channel<0) {
+      unsubscribed_channels.push(unsubscribeChannel)
+    } 
+    
+    // status="unsubscribed";
+     alert(unsubscribed_channels)
     $.ajax({
         type: 'post',
         url: 'http://localhost:8002/unsubscribeChannel',
         data: serializedData2,
         async:true,
         success: function(data){
-         clearTimeout(mysusbTimeOut);
           callback(data);
         },
         error: function(XMLHttpRequest, textstatus, error) { 

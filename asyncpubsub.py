@@ -23,10 +23,8 @@ class SubscribeCart(object):
 	timestampnew=0
 	
 	def register(self,callback,subscribeChannel1):
-		#debug here, the callbacks shouldn't be repeated
 		subscribeChannel1=str(subscribeChannel1)
 		self.callbacks.setdefault(subscribeChannel1,[]).append(callback)
-		# logging.info(self.callbacks)
 
 	def addSubscription(self,subscribeChannel1,session):
 		session=str(session)
@@ -36,29 +34,23 @@ class SubscribeCart(object):
 				return
 
 		self.subscribers.setdefault(subscribeChannel1,[]).append(str(session))
-		# logging.info(self.subscribers)
 
 	def removeSubscription(self,unsubscribeChannel,session):
-		# logging.info("callbacks:"+str(self.callbacks))
 		session=str(session)
 		unsubscribeChannel=str(unsubscribeChannel)
 		if unsubscribeChannel in self.subscribers:
 			if session in self.subscribers[unsubscribeChannel]:
 				self.subscribers[unsubscribeChannel].remove(str(session))
-				# logging.info("callbacks:"+str(self.callbacks))	
-				# logging.info("self.subscribers["+unsubscribeChannel+"].remove("+str(session)+")")
 			else:
 				logging.info("sorry, you are not subscribed to this channel")
 		else:
 			logging.info("Sorry, no channel like this exists")
-		# logging.info(self.subscribers)
 
    
 	def publishMessage(self, publishChannel1,publishObject1):
 		r = redis.StrictRedis(host='localhost', port=6379, db=0)
 		r.zadd(publishChannel1,time.time(),publishObject1)
 		self.notifyCallbacks(str(publishChannel1))
-		# logging.info(self.subscribers)
 	def RemoveMessage(self,channel1,rankStart1,rankEnd1):
 		r = redis.StrictRedis(host='localhost', port=6379, db=0)
 		if r.exists(channel1):
@@ -68,11 +60,9 @@ class SubscribeCart(object):
 			logging.info("the channel doesn't exists")
 
 	def RemoveMessageByKey(self,channel1,key):
-		# logging.info("in RemoveMessageByKey");
 		r = redis.StrictRedis(host='localhost', port=6379, db=0)
 		if r.exists(channel1):
 			r.zrem(channel1,key)
-			logging.info("hey it appears to work"+str(channel1)+str(key));
 			self.notifyCallbacks(str(channel1))
 		else:
 			logging.info("the channel doesn't exists")
@@ -80,13 +70,11 @@ class SubscribeCart(object):
 
 	def notifyCallbacks(self,publishChannel1):
 		if publishChannel1 in self.callbacks:
-			# logging.info("in if of notifyCallbacks")
 			for c in self.callbacks[publishChannel1]:
 				self.callbackHelper(c,publishChannel1)
 			self.callbacks[publishChannel1]=[]
 
 	def callbackHelper(self, callback,publishChannel1):
-		# logging.info("in callbackHelper")
 		callback(self.getMessage(publishChannel1))
 
 	def getMessage(self,Channel1):
@@ -101,7 +89,6 @@ class SubscribeCart(object):
 			count=str(int(count)-1)
 		str1=str1.strip(',')
 		str1='['+str1+']'
-		# logging.info(str1)
 		return str1
 
 class SubscriptionHandler(tornado.web.RequestHandler):
@@ -117,9 +104,6 @@ class SubscriptionHandler(tornado.web.RequestHandler):
 			self.application.subscribeCart.register(self.on_message,subscribeChannel1)
 			
 	def on_message(self,message):
-		# logging.info("on message invoked.. is something changed?")
-		# logging.info("new message: "+message)
-		
 		self.write(message)
 		self.finish()
 
@@ -140,17 +124,13 @@ class RemoveHandler(tornado.web.RequestHandler):
 
 class RemoveHandlerByKey(tornado.web.RequestHandler):
 	def post(self):
-		# logging.info("in remove handler")
 		channel1=self.get_argument('removeChannel1')
 		key=self.get_argument('key')
 		self.application.subscribeCart.RemoveMessageByKey(channel1,key)
-		# logging.info("in RemoveMessageByKey1");
+
 class UnsubscriptionHandler(tornado.web.RequestHandler):
 	def post(self):
-		# logging.info("in UnsubscriptionHandler")
 		unsubscribeChannel=self.get_argument('unsubscribeChannel')
 		session=self.get_argument('session')
 		self.application.subscribeCart.removeSubscription(unsubscribeChannel,session)
-		# self.application.subscribeCart.RemoveMessageByKey(channel1,key)
-		# logging.info("here "+ str(session)+" will be unsubscribed from channel "+unsubscribeChannel);
 		

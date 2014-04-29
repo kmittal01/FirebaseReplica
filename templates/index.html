@@ -78,6 +78,7 @@ function indexKey2() {
   });
   
 }
+
 function publish2() {
   myDataRef=new firebase();
   var publishObject1=$("#publishObject1").val();
@@ -86,20 +87,28 @@ function publish2() {
     // $("#publishReturn").html(data);
   });
 }
+
 function subscribe2() {
   myDataRef=new firebase();
   var subscribeChannel1=$("#subscribeChannel1").val();
-  // var session=$("#session").val();
-  // alert(session);
-  //alert(session);
-  //var subscribeLimit1=$("#subscribeLimit1").val();
-  // myDataRef.subscribe(subscribeChannel1,20,0,session,function(data) {
   myDataRef.subscribe(subscribeChannel1,20,0,function(data) {
     var subsRet='';
     for (i=0;i<data.length;++i){
       subsRet=subsRet+data[i].Rank+'   '+data[i].Obj.name+'   '+data[i].Timestamp+'<br>';
 }
 $("#subscribeReturn").html(subsRet);
+  });
+}
+
+function subscribe3() {
+  myDataRef=new firebase();
+  var subscribeChannel2=$("#subscribeChannel2").val();
+  myDataRef.subscribe(subscribeChannel2,20,0,function(data) {
+    var subsRet2='';
+    for (i=0;i<data.length;++i){
+      subsRet2=subsRet2+data[i].Rank+'   '+data[i].Obj.name+'   '+data[i].Timestamp+'<br>';
+}
+$("#subscribeReturn2").html(subsRet2);
   });
 }
 
@@ -177,6 +186,14 @@ function removeps() {
   <input type="button" value="send" id="sub1" onclick="subscribe2()">
 </form>
 <div id="subscribeReturn"> </div>
+
+<h1>Subscribe to a channel2</h1>
+<form id="subs2">
+  Channel :<input type="text" name="subscribeChannel2" id="subscribeChannel2">
+  Limit: <input type="text" name="subscribeLimit2" id="subscribeLimit2">
+  <input type="button" value="send" id="sub2" onclick="subscribe3()">
+</form>
+<div id="subscribeReturn2"> </div>
 
   <h1>Remove and Element from the channel</h1>
 
