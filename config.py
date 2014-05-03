@@ -8,7 +8,7 @@ import logging
 from uuid import uuid4
 class IndexHandler (tornado.web.RequestHandler):
 	def get(self):
-		self.render("index.html")
+		self.render("index_n_2.html")
 
 class RenderFirebase(tornado.web.RequestHandler):
 	def get(self):

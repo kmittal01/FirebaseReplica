@@ -1,0 +1,158 @@
+<html> 
+<head>
+<title>IIIT-A Student Register</title>
+<script src="jquery.js"></script>
+<script src="firebase.js"></script>
+<script>
+var regFormVisible = false;
+function insert() {
+  myDataRef=new firebase();
+  var studentName=$("#studentName").val();
+  var fathername=$("#fathername").val();
+  var paddress=$("#paddress").val();
+  var course=$("#course").val();
+  var branch=$("#branch").val();
+  var pincode=$("#pincode").val();
+  var emailid=$("#emailid").val();
+  var dob=$("#dob").val();
+  var mobileno=$("#mobileno").val();
+  str='{"studentName":"'+studentName+'","fathername":"'+fathername+'","paddress":"'+paddress+'","course":"'+course+'","branch":"'+branch+'","pincode":"'+pincode+'","emailid":"'+emailid+'","dob":"'+dob+'","mobileno":"'+mobileno+'","unique-key-IIITA":"IIIT-A Register"}';
+  // alert(str); 
+  myDataRef.insert(str,'user-details',function(data) {
+      $('#insertReturn').html(data);
+    });
+}
+function showAllRecords(){
+  $("#regTable").hide();
+  $("#regStudBtn").val("Register New Student");
+  $("#showAllReturn").show();
+  $("#removeReturn").hide();
+  regFormVisible=false;
+  myDataRef=new firebase();
+  var key1='unique-key-IIITA';
+  var gle2='=';
+  var value1='IIIT-A Register';
+  // var parameter1='Type';
+  // var gle1='=';
+  // var parameterValue1='user-details'; 
+  // var limit1=$("#limit1").val();
+  var argumentsObj= new Object();
+  argumentsObj.key1=key1;
+  argumentsObj.gle2=gle2;
+  argumentsObj.value1=value1;
+  // argumentsObj.parameter1=parameter1;
+  // argumentsObj.gle1=gle1;
+  // argumentsObj.parameterValue1=parameterValue1;
+  // // argumentsObj.limit1=limit1;
+
+  myDataRef.search(argumentsObj, function(data) {
+          array="<table border='1'><tr><td>Db Id</td><td>Student Name</td><td>Father's Name</td><td>Postal Address</td><td>Course</td><td>Branch</td><td>Pincode</td><td>Email Id</td><td>Date Of Birth</td><td>Mobile No</td></tr>";
+          for (var r=0;r<data.length;r++){
+            array=array+"<tr><td>"+data[r].Id+"</td><td>"+data[r].Obj.studentName+"</td><td>"+data[r].Obj.fathername+"</td><td>"+data[r].Obj.paddress+"</td><td>"+data[r].Obj.course +"</td><td>"+data[r].Obj.branch+"</td><td>"+data[r].Obj.pincode+"</td><td>"+data[r].Obj.emailid+"</td><td>"+data[r].Obj.dob+"</td><td>"+data[r].Obj.mobileno+"</td></tr>";
+        }
+        array=array+"</table>"
+          $('#showAllReturn').html(array);
+        });
+}
+
+function removeObj() {
+  $("#removeReturn").show();
+  myDataRef=new firebase();
+  var removeEntries=$("#removeEntries").val();
+  myDataRef.removeObj(removeEntries,function(data) {
+    showAllRecords();
+
+  });
+  
+}
+
+function init_func(){
+$("#regTable").hide();
+showAllRecords();
+}
+
+function showRegTable(){
+if (regFormVisible==false) {  
+  $("#regTable").show();
+  $("#regStudBtn").val("Hide Reg Form");
+  regFormVisible=true;
+  $("#showAllReturn").hide();
+  $("#removeReturn").hide();
+}
+else {
+  $("#regTable").hide();
+  $("#regStudBtn").val("Register New Student");
+  $("#showAllReturn").show();
+  regFormVisible=false;
+}
+}
+</script>
+<body onload="init_func()">
+  <h1 >IIIT-A Student Register</h1>
+  <br /><br />
+<input type="button" value="Register New Student" id="regStudBtn" onclick="showRegTable()" />  
+<input type="button" value="Fetch All Records" onclick="showAllRecords()" />
+Remove Database Entries:<input type="text" name="removeEntries" id="removeEntries"/>
+<input type="button" value="Remove" onclick="removeObj()"/>
+<div id="removeReturn"></div>
+
+<div id="regTable">
+<table>
+<tr>
+<td colspan=2>
+<center><font size=4><b>Student Registration Form</b></font></center>
+</td>
+</tr>
+
+<tr>
+<td>Name</td>
+<td><input type=text name="studentName" id="studentName" size="30"></td>
+</tr>
+
+<tr>
+<td>Father's Name</td>
+<td><input type="text" name="fathername" id="fathername" size="30"></td>
+</tr>
+<tr>
+<td>Postal Address</td>
+<td><textarea name="paddress" id="paddress" size="30" style="width:325px;"></textarea> </td>
+</tr>
+
+
+<tr>
+<td>Course</td>
+<td><input type="text" name="course" id="course" size="30"></td>
+</tr>
+
+<tr>
+<td>Branch</td>
+<td><input type="text" name="branch" id="branch" size="30"></td></tr>
+<tr>
+<td>PinCode</td>
+<td><input type="text" name="pincode" id="pincode" size="30"></td>
+
+</tr>
+<tr>
+<td>EmailId</td>
+<td><input type="text" name="emailid" id="emailid" size="30"></td>
+</tr>
+
+<tr>
+<td>DOB</td>
+<td><input type="text" name="dob" id="dob" size="30"></td>
+</tr>
+
+<tr>
+<td>MobileNo</td>
+<td><input type="text" name="mobileno" id="mobileno" size="30"></td>
+</tr>
+<tr>
+<!-- <td><input type="reset"></td> -->
+<td colspan="2"><input type="submit" value="Submit Form" onclick="insert()"/></td>
+</tr>
+</table>
+</div>
+<div id="showAllReturn"></div>
+
+</body>
+</html>
