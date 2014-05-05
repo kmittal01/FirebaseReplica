@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Make a new User</title>
+<script src="/jquery.js"></script>
+<script src="/firebase.js"></script>
+<script>
+var start = new Date().getTime();
+var i;
+var count=1;
+function publish2() {
+  myDataRef=new firebase();
+  var publishObject1='{"name":"Test Object'+count.toString()+'"}';
+  var publishChannel1="cha_cha1";
+   myDataRef.publish(publishObject1,publishChannel1,function(data) {
+    // $("#publishReturn").html(data);
+  });
+}
+for (i=0;i<10000;++i) {
+	publish2();
+	count++;
+}
+var end = new Date().getTime();
+var time = end - start;
+alert('Execution time: ' + time);
+</script>
+</head>
+<body>
+</body>
+</html>

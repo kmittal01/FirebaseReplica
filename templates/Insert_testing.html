@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Make a new User</title>
+<script src="/jquery.js"></script>
+<script src="/firebase.js"></script>
+<script>
+var start = new Date().getTime();
+var i;
+var count=1;
+function insert2() {
+  myDataRef=new firebase();
+  var object1='{"studentName":"Student 21","fathername":"Father of Student 21","paddress":"Address of Student 21","course":"B.Tech","branch":"I.T","pincode":"pin of student 21","emailid":"Email of Student 21","dob":"Dob of Student 21","mobileno":"Mobile No. of Student 21","unique-key-IIITA":"IIIT-A Register"}';
+  var type1='insert-testing';
+  myDataRef.insert(object1,type1,function(data) {
+      $('#insertReturn').html(data);
+      
+    });
+}
+
+for (i=0;i<1000;++i) {
+	insert2();
+}
+var end = new Date().getTime();
+var time = end - start;
+alert('Execution time: ' + time);
+</script>
+</head>
+<body>
+</body>
+</html>

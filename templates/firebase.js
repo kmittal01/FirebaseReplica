@@ -15,8 +15,21 @@ var unsubscribed_channels=[];
   });
 })();
 
+function validateJson(json_obj){
+    try {
+       var c = $.parseJSON(json_obj);
+       return (true);
+    }
+    catch (err) {
+        alert("illeagal json");
+    return(false);
+}
+}
 function firebase () {
   firebase.prototype.insert=function(object1,type1,callback) {
+    if(validateJson(object1)==false){
+      return;
+    }
   var serializedData2 ='object='+object1+'&type='+type1;
   $.ajax({
     type: 'post',
