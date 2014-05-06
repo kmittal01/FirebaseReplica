@@ -105,7 +105,7 @@ $("#subscribeReturn").html(subsRet);
 function subscribe3() {
   myDataRef=new firebase(app_id);
   var subscribeChannel2=$("#subscribeChannel2").val();
-  myDataRef.subscribe(subscribeChannel2,20,0,function(data) {
+  myDataRef.subscribe(subscribeChannel2,30,function(data) {
     var subsRet2='';
     for (i=0;i<data.length;++i){
       subsRet2=subsRet2+data[i].Rank+'   '+data[i].Obj.name+'   '+data[i].Timestamp+'<br>';

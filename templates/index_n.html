@@ -15,7 +15,7 @@ function ip_callback(o) {
 <script src="firebase.js"></script>
 <!-- <script src="https://smart-ip.net/geoip-json?callback=ip_callback"></script> -->
 <script>
-
+app_id="google_docs"
 var loginTime = new Date();
 var undomsg='';
 var Channel1 = "chdoc20";
@@ -33,7 +33,7 @@ var msg = undomsg;
 	msg = msg.replace('"', 'dec34hex22');
 	msg = msg.replace('\'', 'dec39hex27');
 	msg = '{"content":"' + msg +'"}'
-var myDataRef = new firebase();
+var myDataRef = new firebase(app_id);
 	
 	myDataRef.publish(msg,Channel1,function(data) {
 	});
@@ -44,9 +44,10 @@ var myDataRef = new firebase();
 
 function subscribe_content() {
 
-var myDataRef = new firebase();
+var myDataRef = new firebase(app_id);
 
-	myDataRef.subscribe(Channel1,20,0,function(data) {
+	myDataRef.subscribe(Channel1,30,function(data) {
+		
 	var msg1 = data[0].Obj.content.replace(/<br.*?>/g, '\n');
 		msg1 = msg1.replace('dec59hex3b', ';');
 		msg1 = msg1.replace('dec34hex22', '"');
@@ -66,14 +67,14 @@ function publish_user_details(nick){
 	
 //to be added in firebase
 var msg = '{"nick":"' + nick + '"}';
-	myDataRef = new firebase();
+	myDataRef = new firebase(app_id);
 	myDataRef.publish(msg,channel_user_details,function(data) {
 	});
 }
 function subscribe_user_details() {
 
-var myDataRef = new firebase();
-	myDataRef.subscribe(channel_user_details,20,0,function(data) {
+var myDataRef = new firebase(app_id);
+	myDataRef.subscribe(channel_user_details,30,function(data) {
 	var array = '';
 		for (var r = 0;r < data.length;r++) {
 			array = array + (data[r].Obj.nick) + "<br>";
@@ -90,7 +91,7 @@ function undo(){
 
 function insert(object1,type1) {
   
-var myDataRef = new firebase();
+var myDataRef = new firebase(app_id);
 	myDataRef.insert(object1,type1,function(data) {
 	logId = data;
 	});
@@ -121,13 +122,13 @@ $('#send').bind('keyup', function(e) {
 //have to unsubscribe here
 function logout() {
 var msg ='{"nick":"' + nick + '"}';
-var myDataRef = new firebase();
+var myDataRef = new firebase(app_id);
 	myDataRef.removepsbykey(channel_user_details,msg, function(data) {     
 	newDoc();
   	});
 }
 function logs() {
-  myDataRef=new firebase();
+  myDataRef=new firebase(app_id);
   var key1='uniqueName';
   var gle2='=';
   var value1='log';
@@ -168,7 +169,7 @@ function logs() {
 }
 
 function clearLogs() {
-var myDataRef=new firebase();
+var myDataRef=new firebase(app_id);
 myDataRef.removeObj(clearlogsstr,function(data) {
 	alert("data removed");
   });

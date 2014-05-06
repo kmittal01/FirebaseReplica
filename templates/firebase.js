@@ -126,6 +126,7 @@ firebase.prototype.indexKey=function (index1,type1,callback) {
 firebase.prototype.publish=function (publishObject1,publishChannel1,callback) {
   publishChannel1=app_id.toString()+":"+publishChannel1.toString();
   var serializedData2 = 'publishObject1='+publishObject1+'&publishChannel1='+publishChannel1;
+    // alert(serializedData2);
     $.ajax({
         type: 'post',
         url: 'http://localhost:8002/publish',
@@ -138,13 +139,13 @@ firebase.prototype.publish=function (publishObject1,publishChannel1,callback) {
      });
 }
 firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,callback) {
-  subscribeChannel1_o=subscribeChannel1;
   subscribeChannel1=app_id.toString()+":"+subscribeChannel1.toString();
   if (typeof(subscribeLimit1)==='undefined' || subscribeLimit1==='') {
          subscribeLimit1="*";
     }
   subscribe_limits["subscribeChannel1"]=subscribeLimit1;
   var serializedData = 'subscribeChannel1='+subscribeChannel1+'&subscribeLimit1='+subscribe_limits["subscribeChannel1"]+'&session='+session;
+  // alert(serializedData);
   index_of_channel = unsubscribed_channels.indexOf(subscribeChannel1);
   if (index_of_channel>-1) {
     unsubscribed_channels[index_of_channel]="removed_from_list"; 
@@ -155,6 +156,7 @@ firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,callback
       data: serializedData,
       async:true,
       success: function (data){
+        // alert(data+subscribeChannel1_o+subscribeChannel1);
          if (unsubscribed_channels.indexOf(subscribeChannel1)<0){
          var json_obj=JSON.parse(data);
          if (subscribe_limits["subscribeChannel1"]==="*") {
@@ -165,7 +167,7 @@ firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,callback
           callback(json_obj);
           
           }
-           setTimeout('firebase.prototype.subscribe("'+subscribeChannel1_o+'","'+subscribe_limits["subscribeChannel1"]+'",'+callback+')',100);
+           setTimeout('firebase.prototype.subscribe("'+subscribeChannel1.substring(subscribeChannel1.indexOf(":")+1)+'","'+subscribe_limits["subscribeChannel1"]+'",'+callback+')',100);
           }       
          },
       error: function(XMLHttpRequest, textstatus, error) { 
