@@ -1,0 +1,6 @@
+Issues:
+
+Subscribe is being repeated again and again, if clicked more than once.
+Remove all logging.info and alerts before demo
+
+Improve code styling

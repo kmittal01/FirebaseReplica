@@ -1,0 +1,48 @@
+Testing and Analysis:
+
+1st Iteration
+Time to insert 1000 entries on server = 479843
+Time to insert one entry on server = 479843/1000 = 479 milisecond
+
+
+2nd Iteration
+Time to insert 1000 entries on server = 332759 miliseconds
+Time to insert one entry on server = 332759/1000 = 332.75 miliseconds
+
+3rd iteration
+Time to insert 1000 entries on server = 479586
+Time to insert one entry on server = 479586/1000 = 479.59 miliseconds
+
+Insertion time is higher to reduce the search time
+
+//4881 rows in Obj_Table and 48,348 in KeyValue Table
+For search of 10,000 items, time taken = 8.734215
+average time for search=8.734215/10000 = 0.873 milliseconds
+
+2nd iteration:
+Time = 8.176388
+
+3rd iteration:
+Time = 8.371741
+
+//significantly low
+
+Time to subscribe a channel by 10,000 clients = 1.509632 seconds = 1509.63 miliseconds
+Time to subscribe a channel by 1 client = 1509.63/10000 miliseconds =.15 miliseconds
+
+Time to publish 10,000 msgs to 500 subscribers:
+Starting Time : 15:00:59
+End Time : 15:02:51
+number of messages per second = 10000*500/2*60+52 = 10000*500/132 = 37,878
+
+2nd Iteration:
+Starting Time : 15:25:38
+End Time : 15:27:28
+
+number of msgs per second = 10000*500/110 = 45,454
+
+3rd iteration
+Strat Time :15:30:42
+End Time : 15:32:32
+
+number of msgs per second = 10000*500/120 = 41,666

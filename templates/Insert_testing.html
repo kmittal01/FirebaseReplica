@@ -8,23 +8,26 @@
 <script>
 var start = new Date().getTime();
 var i;
-var count=1;
+var count=3022;
 function insert2() {
   myDataRef=new firebase();
-  var object1='{"studentName":"Student 21","fathername":"Father of Student 21","paddress":"Address of Student 21","course":"B.Tech","branch":"I.T","pincode":"pin of student 21","emailid":"Email of Student 21","dob":"Dob of Student 21","mobileno":"Mobile No. of Student 21","unique-key-IIITA":"IIIT-A Register"}';
+  var object1='{"studentName":"Student '+count.toString()+'","fathername":"Father of Student '+count.toString()+'","paddress":"Address of Student '+ count.toString()+'","course":"B.Tech","branch":"I.T","pincode":"pin of student '+count.toString()+'","emailid":"Email of Student '+count.toString()+'","dob":"Dob of Student '+count.toString()+'","mobileno":"Mobile No. of Student '+ count.toString() +'","unique-key-IIITA":"IIIT-A Register"}';
   var type1='insert-testing';
   myDataRef.insert(object1,type1,function(data) {
-      $('#insertReturn').html(data);
-      
+ 		var end = new Date().getTime();
+		var time = end - start;
+      	console.log(time)
+     
     });
 }
 
 for (i=0;i<1000;++i) {
 	insert2();
+	count++;
 }
-var end = new Date().getTime();
-var time = end - start;
-alert('Execution time: ' + time);
+// var end = new Date().getTime();
+// var time = end - start;
+// alert('Execution time: ' + time);
 </script>
 </head>
 <body>

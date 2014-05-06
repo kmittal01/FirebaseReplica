@@ -6,8 +6,9 @@
 <script src="/jquery.js"></script>
 <script src="/firebase.js"></script>
 <script>
+var app_id="first_app";
 function uChannel1() {
-  myDataRef=new firebase();
+  myDataRef=new firebase(app_id);
   var unsubscribeChannel=$("#unsubscribeChannel").val();
  
    myDataRef.unsubscribeChannel(unsubscribeChannel,function(data) {
@@ -15,7 +16,7 @@ function uChannel1() {
   });
 }
 function insert2() {
-  myDataRef=new firebase();
+  myDataRef=new firebase(app_id);
   var object1=$("#insertObject1").val();
   var type1=$("#insertType1").val();
   myDataRef.insert(object1,type1,function(data) {
@@ -24,7 +25,7 @@ function insert2() {
     });
 }
 function query2() {
-  myDataRef=new firebase();
+  myDataRef=new firebase(app_id);
   var queryId=$("#Id1").val();
   myDataRef.query(queryId,function(data){
     for (var i=0;i<data.length;i++){
@@ -35,7 +36,7 @@ function query2() {
 }
 
 function search2() {
-  myDataRef=new firebase();
+  myDataRef=new firebase(app_id);
   var key1=$("#key1").val();
   var gle2=$("#gle2").val();
   var value1=$("#value1").val();
@@ -47,21 +48,21 @@ function search2() {
   argumentsObj.key1=key1;
   argumentsObj.gle2=gle2;
   argumentsObj.value1=value1;
-  // argumentsObj.parameter1=parameter1;
-  // argumentsObj.gle1=gle1;
-  // argumentsObj.parameterValue1=parameterValue1;
-  // argumentsObj.limit1=limit1;
+  argumentsObj.parameter1=parameter1;
+  argumentsObj.gle1=gle1;
+  argumentsObj.parameterValue1=parameterValue1;
+  argumentsObj.limit1=limit1;
 
-  myDataRef.search(argumentsObj, function(data) {
-          var array=[];
+  myDataRef.search(argumentsObj,function(data) {
+          var array='';
           for (var r=0;r<data.length;r++){
-            array.push((data[r].Id)+"<br>");
+            array=array+((data[r].Id)+"<br>");
         }
           $('#searchReturn').html(array);
         });
 }
 function removeObj2() {
-  myDataRef=new firebase();
+  myDataRef=new firebase(app_id);
   var removeId1=$("#removeId1").val();
   myDataRef.removeObj(removeId1,function(data) {
     $("#removeReturn").html(data);
@@ -70,7 +71,7 @@ function removeObj2() {
 }
 
 function indexKey2() {
-  myDataRef=new firebase();
+  myDataRef=new firebase(app_id);
   var index1=$("#index1").val();
   var type1=$("#type1").val();
   myDataRef.indexKey(index1,type1,function(data) {
@@ -80,7 +81,7 @@ function indexKey2() {
 }
 
 function publish2() {
-  myDataRef=new firebase();
+  myDataRef=new firebase(app_id);
   var publishObject1=$("#publishObject1").val();
   var publishChannel1=$("#publishChannel1").val();
    myDataRef.publish(publishObject1,publishChannel1,function(data) {
@@ -89,9 +90,10 @@ function publish2() {
 }
 
 function subscribe2() {
-  myDataRef=new firebase();
+  myDataRef=new firebase(app_id);
   var subscribeChannel1=$("#subscribeChannel1").val();
-  myDataRef.subscribe(subscribeChannel1,20,0,function(data) {
+  var subscribeLimit1=$("#subscribeLimit1").val();
+  myDataRef.subscribe(subscribeChannel1,subscribeLimit1,function(data) {
     var subsRet='';
     for (i=0;i<data.length;++i){
       subsRet=subsRet+data[i].Rank+'   '+data[i].Obj.name+'   '+data[i].Timestamp+'<br>';
@@ -101,7 +103,7 @@ $("#subscribeReturn").html(subsRet);
 }
 
 function subscribe3() {
-  myDataRef=new firebase();
+  myDataRef=new firebase(app_id);
   var subscribeChannel2=$("#subscribeChannel2").val();
   myDataRef.subscribe(subscribeChannel2,20,0,function(data) {
     var subsRet2='';
@@ -113,7 +115,7 @@ $("#subscribeReturn2").html(subsRet2);
 }
 
 function removeps() {
-  myDataRef=new firebase();
+  myDataRef=new firebase(app_id);
   var removeChannel1=$("#removeChannel1").val();
   var rankStart1=$("#rankStart1").val();
   var rankEnd1=$("#rankEnd1").val();
@@ -132,6 +134,7 @@ function removeps() {
   <form id="ins">
     Object:<input type="text" name="insertObject1" id="insertObject1" /> 
     Type:<input type="text" name="insertType1" id="insertType1" /> 
+    App_Id:<input type="text" name="appId1" id="appId1" /> 
     <input type="button" value="insert" onclick="insert2()" />
   </form><br />
 <div id="insertReturn"> </div>
@@ -152,6 +155,7 @@ function removeps() {
     G/L/E:<input type="text" name="gle1" id="gle1" placeholder="= | &lt; | &gt; | &lt;= | &gt;=" /> 
     Value of Paramter:<input type="text" name="parameterValue1" id="parameterValue1" /><br />
     Limit:<input type="text" name="limit1" id="limit1" /> 
+    AppId:<input type="text" name="appId2" id="appId2" /> 
     <input type="button" value="Search" onclick="search2()" />
   </form>
 <div id="searchReturn"> </div>

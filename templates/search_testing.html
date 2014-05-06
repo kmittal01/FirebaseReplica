@@ -8,18 +8,27 @@
 <script>
 var start = new Date().getTime();
 var i;
-var count=1;
-function publish2() {
+var count=2022;
+function search() {
   myDataRef=new firebase();
-  var publishObject1='{"name":"Test Object'+count.toString()+'"}';
-  var publishChannel1="chhh1";
-   myDataRef.publish(publishObject1,publishChannel1,function(data) {
-    // $("#publishReturn").html(data);
-  });
+  var key1="studentName";
+  var gle2="=";
+  var value1="Student "+count.toString();
+  var argumentsObj= new Object();
+  argumentsObj.key1=key1;
+  argumentsObj.gle2=gle2;
+  argumentsObj.value1=value1;
+  myDataRef.search(argumentsObj,function(data) {
+      
+    });
 }
+
 for (i=0;i<10000;++i) {
-	publish2();
+	search();
 	count++;
+  if (count>3022) {
+    count=2022;
+  }
 }
 var end = new Date().getTime();
 var time = end - start;

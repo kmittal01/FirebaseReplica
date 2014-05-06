@@ -50,11 +50,8 @@ class SubscribeCart(object):
 	def publishMessage(self, publishChannel1,publishObject1):
 		r = redis.StrictRedis(host='localhost', port=6379, db=0)
 		r.zadd(publishChannel1,time.time(),publishObject1)
-		start= time.clock()
 		self.notifyCallbacks(str(publishChannel1))
-		end= time.clock()
-		timediff= (end-start)
-		logging.info("time taken:"+str(timediff))
+
 	def RemoveMessage(self,channel1,rankStart1,rankEnd1):
 		r = redis.StrictRedis(host='localhost', port=6379, db=0)
 		if r.exists(channel1):
@@ -109,12 +106,12 @@ class SubscriptionHandler(tornado.web.RequestHandler):
 				session = uuid4()
 				self.application.subscribeCart.addSubscription(subscribeChannel1,session)
 				self.application.subscribeCart.register(self.on_message,subscribeChannel1)
-				end= time.clock()
-				timediff= (end-start)
-				logging.info("time taken:"+str(timediff))
+			end= time.clock()
+			timediff= (end-start)
+			logging.info("time taken:"+str(timediff))
 	def on_message(self,message):
 		pass
-		logging.info("something")
+		logging.info(time.clock())
 		# self.write(message)
 		# self.finish()
 
