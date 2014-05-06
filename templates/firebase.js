@@ -124,6 +124,7 @@ firebase.prototype.indexKey=function (index1,type1,callback) {
      });
 }
 firebase.prototype.publish=function (publishObject1,publishChannel1,callback) {
+  publishChannel1=app_id.toString()+":"+publishChannel1.toString();
   var serializedData2 = 'publishObject1='+publishObject1+'&publishChannel1='+publishChannel1;
     $.ajax({
         type: 'post',
@@ -137,7 +138,11 @@ firebase.prototype.publish=function (publishObject1,publishChannel1,callback) {
      });
 }
 firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,callback) {
-
+  subscribeChannel1_o=subscribeChannel1;
+  subscribeChannel1=app_id.toString()+":"+subscribeChannel1.toString();
+  if (typeof(subscribeLimit1)==='undefined' || subscribeLimit1==='') {
+         subscribeLimit1="*";
+    }
   subscribe_limits["subscribeChannel1"]=subscribeLimit1;
   var serializedData = 'subscribeChannel1='+subscribeChannel1+'&subscribeLimit1='+subscribe_limits["subscribeChannel1"]+'&session='+session;
   index_of_channel = unsubscribed_channels.indexOf(subscribeChannel1);
@@ -152,9 +157,15 @@ firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,callback
       success: function (data){
          if (unsubscribed_channels.indexOf(subscribeChannel1)<0){
          var json_obj=JSON.parse(data);
-         json_obj=json_obj.slice(0,subscribe_limits["subscribeChannel1"]);
+         if (subscribe_limits["subscribeChannel1"]==="*") {
          callback(json_obj);
-           setTimeout('firebase.prototype.subscribe("'+subscribeChannel1+'","'+subscribe_limits["subscribeChannel1"]+'",'+callback+')',100);
+         }
+         else {
+          json_obj=json_obj.slice(0,subscribe_limits["subscribeChannel1"]);
+          callback(json_obj);
+          
+          }
+           setTimeout('firebase.prototype.subscribe("'+subscribeChannel1_o+'","'+subscribe_limits["subscribeChannel1"]+'",'+callback+')',100);
           }       
          },
       error: function(XMLHttpRequest, textstatus, error) { 
@@ -164,6 +175,7 @@ firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,callback
 }
 
 firebase.prototype.removeps=function (removeChannel1,rankStart1,rankEnd1,callback) {
+  removeChannel1=app_id.toString()+":"+removeChannel1.toString();
   var serializedData2 = 'removeChannel1='+removeChannel1+'&rankStart1='+rankStart1+'&rankEnd1='+rankEnd1;
 
     $.ajax({
@@ -179,6 +191,7 @@ firebase.prototype.removeps=function (removeChannel1,rankStart1,rankEnd1,callbac
 }
 
 firebase.prototype.removepsbykey=function (removeChannel1,key,callback) {
+removeChannel1=app_id.toString()+":"+removeChannel1.toString();
 var serializedData2 = 'removeChannel1='+removeChannel1+'&key='+key;
 
     $.ajax({
@@ -194,6 +207,7 @@ var serializedData2 = 'removeChannel1='+removeChannel1+'&key='+key;
 }
 
 firebase.prototype.unsubscribeChannel=function (unsubscribeChannel,callback) {
+unsubscribeChannel=app_id.toString()+":"+unsubscribeChannel.toString();
 var serializedData2 = 'unsubscribeChannel='+unsubscribeChannel+'&session='+session;
   
     index_of_channel = unsubscribed_channels.indexOf(unsubscribeChannel);
