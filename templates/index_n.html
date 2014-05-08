@@ -1,21 +1,17 @@
 <html> 
 <head>
 <title> Google Docs</title>
-<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-<script src="/jquery.js"></script>
-<script src="/firebase.js"></script>
 <script>
 var myIp;
 function ip_callback(o) {
     myIp = o.host;
 }
 </script>
-<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 <script src="jquery.js"></script>
 <script src="firebase.js"></script>
 <!-- <script src="https://smart-ip.net/geoip-json?callback=ip_callback"></script> -->
 <script>
-app_id="google_docs"
+app_id="google_docs6"
 var loginTime = new Date();
 var undomsg='';
 var Channel1 = "chdoc20";
@@ -75,9 +71,9 @@ function subscribe_user_details() {
 
 var myDataRef = new firebase(app_id);
 	myDataRef.subscribe(channel_user_details,30,function(data) {
-	var array = '';
+	var array = "<table>";
 		for (var r = 0;r < data.length;r++) {
-			array = array + (data[r].Obj.nick) + "<br>";
+			array = array + "<tr><td><div style=\"border-radius: 50%;width: 10px;height:10px;background-color: #008000\"></div></td><td style=\"padding:5px;\">" + 	(data[r].Obj.nick) + "</td></tr>";
 		}
 		$('#userlist1').html(array);
 	});
@@ -151,10 +147,10 @@ function logs() {
           	array="<br>Logs are empty";
           }
           else {
-          array='<br><table border="1"><tr><th>Id</th><th>Nick</th><th>Login Time</th><th>Ip Address</th></tr>';
+          array='<br><br><table border="1"><tr><th>Id</th><th>Nick</th><th>Login Time</th></tr>';
           for (var r=0;r<data.length;r++){
         		clearlogsstr=clearlogsstr + data[r].Id + ',';
-          	array=array+('<tr><td>' + (data[r].Id) + ' </td><td>' +(data[r].Obj.nick) + ' </td><td>' + (data[r].Obj.loginTime) + ' </td><td>' + (data[r].Obj.ipAddress) + "</td></tr>");
+          	array=array+('<tr><td>' + (data[r].Id) + ' </td><td>' +(data[r].Obj.nick) + ' </td><td>' + (data[r].Obj.loginTime) + ' </td><td>' );
         		}
         	array=array+'</table> ';
         	}
@@ -186,7 +182,7 @@ $(document).ready(function(){
 <body onload="details()">
 	<div style="width:60%;float:left;">
 		 <!-- <img src="/static/undo.jpeg" width="90" height="50" alt="submit" onclick="undo()"/> -->
-	<h1 > Google Docs</h1>
+	<h1 > Shared Docs</h1>
 	</div>
 	<div style="width:40%;margin-left:800px">
  <input type="button" value="Show Logs" id="showLogs" onclick="logs()" >
@@ -201,8 +197,9 @@ $(document).ready(function(){
  <input type="button" value="Redo" id="undo1" onclick="undo()">
 <textarea id="send" name="msg" style="width:100%;height:100%;"></textarea>	
 </div>
-<div style="width:18%;height:5%;margin-top:65px;background-color:green;margin-left:1040px"></div>
-<div id="userlist1" name="userlist1" style="width:18%;height:100%;margin-top:25px;margin-left:1040px"></div>
+<div style="width:18%;height:5%;margin-top:65px;background-color:green;margin-left:1080px">
+<p style="padding:5px;text-align:center;font-size:18px;">Online Users</p></div>
+<div id="userlist1" name="userlist1" style="width:18%;height:100%;margin-top:25px;margin-left:1060px;"></div>
 <div id="hid1">
 </div>
 </body>

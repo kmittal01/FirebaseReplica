@@ -50,6 +50,7 @@ function firebase (app_id) {
       type: 'post',
       url: 'http://localhost:8002/query',
       data: 'Id1='+queryId,
+      alert(data);
       async:true,
       success: function(data){
         //alert(data);
@@ -86,7 +87,7 @@ firebase.prototype.search=function(argumentsObj,callback) {
         data: serializedData2,
         async:true,
         success: function(data){
-        alert(data);
+        // alert(data);
         var json_obj=JSON.parse(data);
         callback(json_obj);
       },
@@ -126,7 +127,7 @@ firebase.prototype.indexKey=function (index1,type1,callback) {
 firebase.prototype.publish=function (publishObject1,publishChannel1,callback) {
   publishChannel1=app_id.toString()+":"+publishChannel1.toString();
   var serializedData2 = 'publishObject1='+publishObject1+'&publishChannel1='+publishChannel1;
-    // alert(serializedData2);
+    
     $.ajax({
         type: 'post',
         url: 'http://localhost:8002/publish',
@@ -145,7 +146,6 @@ firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,callback
     }
   subscribe_limits["subscribeChannel1"]=subscribeLimit1;
   var serializedData = 'subscribeChannel1='+subscribeChannel1+'&subscribeLimit1='+subscribe_limits["subscribeChannel1"]+'&session='+session;
-  // alert(serializedData);
   index_of_channel = unsubscribed_channels.indexOf(subscribeChannel1);
   if (index_of_channel>-1) {
     unsubscribed_channels[index_of_channel]="removed_from_list"; 
@@ -156,7 +156,6 @@ firebase.prototype.subscribe=function(subscribeChannel1,subscribeLimit1,callback
       data: serializedData,
       async:true,
       success: function (data){
-        // alert(data+subscribeChannel1_o+subscribeChannel1);
          if (unsubscribed_channels.indexOf(subscribeChannel1)<0){
          var json_obj=JSON.parse(data);
          if (subscribe_limits["subscribeChannel1"]==="*") {
@@ -219,7 +218,7 @@ var serializedData2 = 'unsubscribeChannel='+unsubscribeChannel+'&session='+sessi
     } 
     
     // status="unsubscribed";
-     alert(unsubscribed_channels)
+     // alert(unsubscribed_channels)
     $.ajax({
         type: 'post',
         url: 'http://localhost:8002/unsubscribeChannel',

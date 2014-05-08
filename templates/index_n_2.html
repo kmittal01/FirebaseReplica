@@ -4,9 +4,10 @@
 <script src="jquery.js"></script>
 <script src="firebase.js"></script>
 <script>
+app_id="IIIT-Reg"
 var regFormVisible = false;
 function insert() {
-  myDataRef=new firebase();
+  myDataRef=new firebase(app_id);
   var studentName=$("#studentName").val();
   var fathername=$("#fathername").val();
   var paddress=$("#paddress").val();
@@ -28,7 +29,7 @@ function showAllRecords(){
   $("#showAllReturn").show();
   $("#removeReturn").hide();
   regFormVisible=false;
-  myDataRef=new firebase();
+  myDataRef=new firebase(app_id);
   var key1='unique-key-IIITA';
   var gle2='=';
   var value1='IIIT-A Register';
@@ -57,7 +58,7 @@ function showAllRecords(){
 
 function removeObj() {
   $("#removeReturn").show();
-  myDataRef=new firebase();
+  myDataRef=new firebase(app_id);
   var removeEntries=$("#removeEntries").val();
   myDataRef.removeObj(removeEntries,function(data) {
     showAllRecords();
